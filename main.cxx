@@ -1,24 +1,24 @@
-#include <iostream>
-#include <windows.h>
-#include <optional>
-#include <thread>
+#include "sdk/sdk.hxx"
 
 namespace n_nt {
+   using bool_t = std::bitset< 1 >;
    [[ nodiscard ]]
-   const std::uint8_t free_library(
-      const std::optional< std::ptrdiff_t >&instance
+   const n_nt::bool_t free_library( 
+      const std::optional< std::ptrdiff_t >&instance 
    ) {
-      if ( !instance.has_value( ) || instance.value( ) == -1 )
-         return 0;
-      return reinterpret_cast< std::uint8_t( __stdcall* )( const std::ptrdiff_t instance ) >
+      if ( !instance.has_value( ) )
+         return n_nt::bool_t{ 0 };
+      return reinterpret_cast< std::int32_t( __stdcall* )( std::ptrdiff_t ) >
          ( std::addressof( ::FreeLibrary ) )( instance.value( ) );
    }
 }
 
-const std::int32_t dll_main(
-   std::ptrdiff_t instance
+std::int32_t DllMain(
+   const std::ptrdiff_t instance,
+   const std::int32_t call_reason,
+   const std::ptrdiff_t reserved
 ) {
-   auto ctx = std::make_optional( instance );
+   ( instance, call_reason, reserved );
 
-   return std::int32_t{ n_nt::free_library( std::nullopt ) };
+   return n_nt::free_library( std::optional< std::ptrdiff_t >{ instance } ).none( );
 }
