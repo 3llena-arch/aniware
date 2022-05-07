@@ -1,12 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <optional>
-#include <functional>
-#include <windows.h>
-#include <string_view>
-#include <string>
-
 namespace n_nt {
    [[ nodiscard ]]
    const std::uint8_t alloc_console( ) {
@@ -32,6 +25,18 @@ namespace n_nt {
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
       return !!reinterpret_cast< call_t >
          ( std::addressof( ::CloseHandle ) )( handle.value( ) );
+   }
+
+   [[ nodiscard ]]
+   const std::uint8_t free_library(
+      const std::optional< std::ptrdiff_t >&module
+   ) {
+      if ( !module.has_value( ) || module.value( ) <= 0 )
+         return 0;
+
+      using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
+      return !!reinterpret_cast< call_t >
+         ( std::addressof( ::FreeLibrary ) )( module.value( ) );
    }
    
    [[ nodiscard ]]

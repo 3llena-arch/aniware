@@ -7,8 +7,8 @@
 #include <cstdint>
 
 #include "include/library.hxx"
-#include "include/tlhelp32.hxx"
 #include "include/types.hxx"
+#include "include/tlhelp32.hxx"
 
 /*
 enum class snap_flag_t : std::uint8_t {

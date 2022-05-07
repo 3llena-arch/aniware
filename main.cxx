@@ -9,5 +9,5 @@ const std::int32_t DllMain(
 
    // :)
 
-   return FreeLibrary( ( HMODULE )instance );
+   return n_nt::free_library( std::make_optional( instance ) );
 }
