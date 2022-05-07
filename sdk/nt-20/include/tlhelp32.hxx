@@ -3,15 +3,19 @@
 namespace n_nt {
    [[ nodiscard ]]
    const std::optional< std::ptrdiff_t >create_tlhelp32_snapshot(
-      const std::optional< std::int32_t >&flags,
+      const std::optional< n_nt::snap_flag_t >&flags,
       const std::optional< std::int32_t >&pid = std::make_optional( 0 )
    ) {
-      if ( !flags.has_value( ) || flags.value( ) <= 0 )
+      if ( !flags.has_value( ) )
+         return std::nullopt;
+
+      const auto ctx{ static_cast< std::int32_t >( flags.value( ) ) };
+      if ( ctx <= 0 )
          return std::nullopt;
 
       using call_t = std::ptrdiff_t( __stdcall* )( std::int32_t, std::int32_t );
       return std::make_optional( reinterpret_cast< call_t >
-         ( std::addressof( ::CreateToolhelp32Snapshot ) )( flags.value( ), pid.value( ) ) );
+         ( std::addressof( ::CreateToolhelp32Snapshot ) )( ctx, pid.value( ) ) );
    }
 
    [[ nodiscard ]]

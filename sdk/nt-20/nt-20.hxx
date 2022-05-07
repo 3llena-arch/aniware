@@ -5,105 +5,98 @@
 #include <functional>
 #include <optional>
 #include <cstdint>
+#include <string>
+#include <map>
 
 #include "include/library.hxx"
 #include "include/types.hxx"
 #include "include/tlhelp32.hxx"
 
-/*
-enum class snap_flag_t : std::uint8_t {
-   process = 2,
-   thread = 4,
-   module = 8
-};
+namespace n_nt {
+   [[ nodiscard ]]
+   const std::optional< std::map< std::string, n_nt::process_entry_t > >process_list( ) {
+      const auto snap{ n_nt::create_tlhelp32_snapshot( n_nt::snap_flag_t::process ) };
+      if ( !snap.has_value( ) || snap.value( ) <= 0 )
+         return std::nullopt;
 
-const struct snap_process_t : process_entry_t {
-   std::string_view m_file_name;
-   std::vector< module_entry_t >m_modules;
-   std::vector< thread_entry_t >m_threads;
-};
+      std::optional< n_nt::process_entry_t >ctx{ };
+      ctx.value( ).m_size = sizeof n_nt::process_entry_t;
 
-[[ nodiscard ]]
-const std::optional< std::vector< process_entry_t > >get_process_list( ) {
-   const std::ptrdiff_t snap{ nt::create_toolhelp32_snapshot( snap_flag_t::process, 0 ) };
-   if ( !snap )
-      return std::nullopt;
+      std::map< std::string, n_nt::process_entry_t >list{ };
+      if ( n_nt::process32_first( snap, ctx ) )
+         list.emplace( ctx.value( ).m_file_name, ctx.value_or( n_nt::process_entry_t{ } ) );
 
-   const process_entry_t entry{ .m_size = sizeof( process_entry_t ) };
-   std::vector< process_entry_t >list{ };
-   
-   if ( nt::process32_first( snap, reinterpret_cast< std::ptrdiff_t >( &entry ) ) )
-      list.emplace_back( entry );
+      while ( n_nt::process32_next( snap, ctx ) )
+         list.emplace( ctx.value( ).m_file_name, ctx.value_or( n_nt::process_entry_t{ } ) );
 
-   while ( nt::process32_next( snap, reinterpret_cast< std::ptrdiff_t >( &entry ) ) )
-      list.emplace_back( entry );
+      return ( n_nt::close_handle( snap ) && list.empty( ) )
+         ? std::nullopt : std::make_optional( list );
+   }
 
-   if ( !nt::close_handle( snap ) )
-      return std::nullopt;
+   [[ nodiscard ]]
+   const std::optional< std::map< std::string, n_nt::module_entry_t > >module_list(
+      const std::optional< n_nt::process_entry_t >&entry
+   ) {
+      const auto snap{ n_nt::create_tlhelp32_snapshot( n_nt::snap_flag_t::module, 
+         std::make_optional( entry.value( ).m_process_id ) ) };
+      if ( !snap.has_value( ) || snap.value( ) <= 0 )
+         return std::nullopt;
 
-   return list.empty( ) ? std::nullopt : std::make_optional( std::move( list ) );
-}
+      std::optional< n_nt::module_entry_t >ctx{ };
+      ctx.value( ).m_size = sizeof n_nt::module_entry_t;
 
-[[ nodiscard ]]
-const std::optional< const std::vector< module_entry_t > >get_module_list(
-   const process_entry_t pe
-) {
-   const std::ptrdiff_t snap{ nt::create_toolhelp32_snapshot( snap_flag_t::module, pe.m_process_id ) };
-   if ( !snap )
-      return std::nullopt;
+      std::map< std::string, n_nt::module_entry_t >list{ };
+      if ( n_nt::module32_first( snap, ctx ) )
+         list.emplace( ctx.value( ).m_file_name, ctx.value_or( n_nt::module_entry_t{ } ) );
 
-   const module_entry_t entry{ .m_size = sizeof( module_entry_t ) };
-   std::vector< module_entry_t >list{ };
+      while ( n_nt::module32_next( snap, ctx ) )
+         list.emplace( ctx.value( ).m_file_name, ctx.value_or( n_nt::module_entry_t{ } ) );
 
-   if ( nt::module32_first( snap, reinterpret_cast< std::ptrdiff_t >( &entry ) ) )
-      list.emplace_back( entry );
+      return ( n_nt::close_handle( snap ) && list.empty( ) )
+         ? std::nullopt : std::make_optional( list );
+   }
 
-   while ( nt::module32_next( snap, reinterpret_cast< std::ptrdiff_t >( &entry ) ) )
-      list.emplace_back( entry );
+   [[ nodiscard ]]
+   const std::optional< std::vector< n_nt::thread_entry_t > >thread_list(
+      const std::optional< n_nt::process_entry_t >&entry
+   ) {
+      const auto snap{ n_nt::create_tlhelp32_snapshot( n_nt::snap_flag_t::thread,
+         std::make_optional( entry.value( ).m_process_id ) ) };
+      if ( !snap.has_value( ) || snap.value( ) <= 0 )
+         return std::nullopt;
 
-   if ( !nt::close_handle( snap ) )
-      return std::nullopt;
+      std::optional< n_nt::thread_entry_t >ctx{ };
+      ctx.value( ).m_size = sizeof n_nt::thread_entry_t;
 
-   return list.empty( ) ? std::nullopt : std::make_optional( std::move( list ) );
-}
+      std::vector< n_nt::thread_entry_t >list{ };
+      if ( n_nt::thread32_first( snap, ctx ) )
+         list.push_back( ctx.value_or( n_nt::thread_entry_t{ } ) );
 
-[[ nodiscard ]]
-const std::optional< const std::vector< thread_entry_t > >get_thread_list(
-   const process_entry_t pe
-) {
-   const std::ptrdiff_t snap{ nt::create_toolhelp32_snapshot( snap_flag_t::thread, pe.m_process_id ) };
-   if ( !snap )
-      return std::nullopt;
+      while ( n_nt::thread32_next( snap, ctx ) )
+         list.push_back( ctx.value_or( n_nt::thread_entry_t{ } ) );
 
-   const thread_entry_t entry{ .m_size = sizeof( thread_entry_t ) };
-   std::vector< thread_entry_t >list{ };
+      return ( n_nt::close_handle( snap ) && list.empty( ) )
+         ? std::nullopt : std::make_optional( list );
+   }
 
-   if ( nt::thread32_first( snap, reinterpret_cast< std::ptrdiff_t >( &entry ) ) )
-      list.emplace_back( entry );
+   [[ nodiscard ]]
+   const std::uint8_t for_every_process(
+      const std::function< std::uint8_t( const n_nt::snap_process_t ) >&callback
+   ) {
+      const auto list{ n_nt::process_list( ) };
+      if ( !list.has_value( ) || list.value( ).empty( ) )
+         return 0;
 
-   while ( nt::thread32_next( snap, reinterpret_cast< std::ptrdiff_t >( &entry ) ) )
-      list.emplace_back( entry );
-
-   if ( !nt::close_handle( snap ) )
-      return std::nullopt;
-   
-   return list.empty( ) ? std::nullopt : std::make_optional( std::move( list ) );
-}
-
-export const void enumerate(
-   const std::function< void( const snap_process_t ) >&callback
-) {
-   const auto process_list = get_process_list( );
-   if ( !process_list.has_value( ) )
-      return;
-
-   for ( auto it : process_list.value( ) ) {
-      const snap_process_t ctx{ 
-         .m_file_name = std::string_view{ reinterpret_cast< char* >( it.m_file_name ) },
-         .m_modules = get_module_list( it ).value( ),
-         .m_threads = get_thread_list( it ).value( )
-      };
-      callback( std::move( ctx ) );
+      for ( const auto [ key, val ] : list.value( ) ) {
+         if ( key.empty( ) || !val.m_size )
+            continue;
+         const n_nt::snap_process_t ctx{
+            .m_file_name = std::make_optional( val.m_file_name ),
+            .m_modules = n_nt::module_list( std::make_optional( val ) ),
+            .m_threads = n_nt::thread_list( std::make_optional( val ) )
+         };
+         std::invoke( callback, ctx );
+      }
+      return 1;
    }
 }
-*/
