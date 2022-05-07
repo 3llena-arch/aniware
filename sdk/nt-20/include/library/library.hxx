@@ -17,11 +17,22 @@ namespace n_nt {
    const std::uint8_t close_handle(
       const std::optional< std::ptrdiff_t >&handle
    ) {
+      if ( !handle.has_value( ) || handle.value( ) == -1 )
+         return 0;
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
-
-      return reinterpret_cast<const std::int32_t(__stdcall*)(
-         const std::ptrdiff_t handle
-         )>(&CloseHandle)(handle);
+      return !!reinterpret_cast< call_t >
+         ( std::addressof( ::CloseHandle ) )( handle.value( ) );
+   }
+   
+   [[ nodiscard ]]
+   const std::optional< std::ptrdiff_t >load_library(
+      const std::string_view& module
+   ) {
+      if ( !module.has_value( ) || module.value( ).empty( ) )
+         return std::nullopt;
+      using call_t = std::ptrdiff_t( __stdcall* )( const char* );
+      return std::make_optional( reinterpret_cast< call_t >
+         ( std::addressof( ::LoadLibrary ) )( module.value( ).data( ) ) );
    }
 
    [[ nodiscard ]]

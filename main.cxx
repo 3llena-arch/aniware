@@ -7,7 +7,7 @@ const std::int32_t DllMain(
 ) {
    ( instance, call_reason, reserved );
 
+   // :)
 
-
-   return n_nt::free_library( std::ref( instance ) );
+   return FreeLibrary( ( HMODULE )instance );
 }
