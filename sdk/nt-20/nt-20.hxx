@@ -3,13 +3,12 @@
 #include <windows.h>
 #include <tlhelp32.h>
 #include <functional>
-#include <cstdint>
 #include <optional>
+#include <cstdint>
 
 #include "include/library.hxx"
 #include "include/tlhelp32.hxx"
 #include "include/types.hxx"
-#include "include/window.hxx"
 
 /*
 enum class snap_flag_t : std::uint8_t {
