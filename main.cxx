@@ -1,36 +1,18 @@
 #include "sdk/sdk.hxx"
 
 [[ nodiscard ]]
-const std::uint8_t open_console( ) {
-   if ( !n_nt::alloc_console( ) )
-      return 0;
-   
-   if ( !std::freopen( "conin$", "r", __acrt_iob_func( 0 ) )
-     || !std::freopen( "conout$", "w", __acrt_iob_func( 1 ) )
-     || !std::freopen( "conout$", "w", __acrt_iob_func( 2 ) ) )
-      return 0;
-
-   return std::cout.good( ) && std::cerr.good( ) && std::cin.good( );
-}
-
-[[ nodiscard ]]
-const std::uint8_t close_console( ) {
-   if ( std::fclose( __acrt_iob_func( 0 ) )
-     || std::fclose( __acrt_iob_func( 1 ) )
-     || std::fclose( __acrt_iob_func( 2 ) ) )
-      return 0;
-
-   if ( !n_nt::free_console( ) )
-      return 0;
-
-   return std::cout.bad( ) && std::cerr.bad( ) && std::cin.bad( );
-}
-
-[[ nodiscard ]]
 const std::int32_t initial_thread(
    const std::ptrdiff_t instance
 ) {
-   return n_nt::free_library( instance );
+   if ( n_nt::open_console( ) ) {
+      std::cout << "scratch my balls" << std::endl;
+      // setup shit
+      // mhmhmhmhmh  do shit
+      while ( !::GetAsyncKeyState( 0x23 ) )
+		   std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
+      n_nt::close_console( );
+   }
+   return n_nt::free_library_exit_thread( instance );
 }
 
 const std::int32_t DllMain(
@@ -38,7 +20,10 @@ const std::int32_t DllMain(
    const n_nt::entry_flag_t call,
    const std::ptrdiff_t reserved
 ) {
-   if ( call == n_nt::entry_flag_t::process_attach )
-      n_nt::close_handle( n_nt::create_thread( &initial_thread, instance ) );
+   if ( call == n_nt::entry_flag_t::process_attach ) {
+      auto ctx{ n_nt::create_thread( std::addressof( initial_thread ), instance ) };
+      if ( ctx.has_value( ) )
+         n_nt::close_handle( ctx );
+   }
    return 1;
 }

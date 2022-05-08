@@ -3,6 +3,7 @@
 #include "include/library.hxx"
 #include "include/types.hxx"
 #include "include/tlhelp32.hxx"
+#include "include/console.hxx"
 
 namespace n_nt {
    [[ nodiscard ]]
