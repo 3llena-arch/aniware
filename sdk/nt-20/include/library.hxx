@@ -33,6 +33,16 @@ namespace n_nt {
          ( std::addressof( ::CreateThread ) )( 0, 0, call, parameter.value( ), 0, 0 ) );
    }
 
+   const std::uint8_t disable_thread_calls(
+      const std::optional< std::ptrdiff_t >&module
+   ) {
+      if ( !module.has_value( ) || module.value( ) <= 0 )
+         return 0;
+      using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
+      return !!reinterpret_cast< call_t >
+         ( std::addressof( ::DisableThreadLibraryCalls ) )( module.value( ) );
+   }
+
    const std::uint8_t close_handle(
       const std::optional< std::ptrdiff_t >&handle
    ) {
