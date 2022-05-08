@@ -7,6 +7,12 @@ namespace n_nt {
       module = 8
    };
 
+   enum class entry_flag_t : std::int32_t {
+      process_detach,
+      process_attach,
+      thread_attach,
+   };
+
    const struct module_entry_t {
       std::int32_t m_size, m_module_id, m_process_id;
       std::int32_t m_global_usage_count, m_process_usage_count;

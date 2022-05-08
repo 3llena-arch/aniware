@@ -16,6 +16,23 @@ namespace n_nt {
    }
 
    [[ nodiscard ]]
+   const std::optional< std::ptrdiff_t >create_thread(
+      const auto& callback,
+      const std::optional< std::ptrdiff_t >&parameter
+   ) {
+      if ( !callback || !parameter.has_value( ) )
+         return std::nullopt;
+
+      const std::ptrdiff_t call{ reinterpret_cast< std::ptrdiff_t >( callback ) };
+      if ( !call )
+         return std::nullopt;
+
+      using call_t = std::ptrdiff_t( __stdcall* )( std::ptrdiff_t, std::ptrdiff_t, 
+         std::ptrdiff_t, std::ptrdiff_t, std::int32_t, std::ptrdiff_t );
+      return std::make_optional( reinterpret_cast< call_t >
+         ( std::addressof( ::CreateThread ) )( 0, 0, call, parameter.value( ), 0, 0 ) );
+   }
+
    const std::uint8_t close_handle(
       const std::optional< std::ptrdiff_t >&handle
    ) {
@@ -27,7 +44,6 @@ namespace n_nt {
          ( std::addressof( ::CloseHandle ) )( handle.value( ) );
    }
 
-   [[ nodiscard ]]
    const std::uint8_t free_library(
       const std::optional< std::ptrdiff_t >&module
    ) {
@@ -37,6 +53,18 @@ namespace n_nt {
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
       return !!reinterpret_cast< call_t >
          ( std::addressof( ::FreeLibrary ) )( module.value( ) );
+   }
+
+   const std::uint8_t free_library_exit_thread(
+      const std::optional< std::ptrdiff_t >&module,
+      const std::optional< std::int32_t >&flags = std::make_optional( 0 )
+   ) {
+      if ( !module.has_value( ) || module.value( ) <= 0 )
+         return 0;
+
+      using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t, std::int32_t );
+      return !!reinterpret_cast< call_t >
+         ( std::addressof( ::FreeLibraryAndExitThread ) )( module.value( ), flags.value( ) );
    }
    
    [[ nodiscard ]]

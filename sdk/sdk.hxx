@@ -1,11 +1,15 @@
 #pragma once
 
+#pragma warning ( disable : 4100 )
+
 #include <windows.h>
 #include <tlhelp32.h>
 #include <functional>
 #include <algorithm>
 #include <optional>
 #include <iostream>
+#include <thread>
+#include <mutex>
 #include <deque>
 #include <map>
 
