@@ -11,6 +11,7 @@ namespace n_nt {
       process_detach,
       process_attach,
       thread_attach,
+      thread_detach
    };
 
    const struct module_entry_t {
