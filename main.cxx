@@ -21,7 +21,7 @@ const std::int32_t DllMain(
    const std::ptrdiff_t reserved
 ) {
    if ( call == n_nt::entry_flag_t::process_attach ) {
-      auto ctx{ n_nt::create_thread( std::addressof( initial_thread ), instance ) };
+      const auto ctx{ n_nt::create_thread( std::addressof( initial_thread ), instance ) };
       if ( ctx.has_value( ) )
          n_nt::close_handle( ctx );
    }
