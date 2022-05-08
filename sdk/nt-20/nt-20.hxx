@@ -1,13 +1,5 @@
 #pragma once
 
-#include <windows.h>
-#include <tlhelp32.h>
-#include <functional>
-#include <optional>
-#include <cstdint>
-#include <string>
-#include <map>
-
 #include "include/library.hxx"
 #include "include/types.hxx"
 #include "include/tlhelp32.hxx"
@@ -19,10 +11,9 @@ namespace n_nt {
       if ( !snap.has_value( ) || snap.value( ) <= 0 )
          return std::nullopt;
 
-      std::optional< n_nt::process_entry_t >ctx{ };
-      ctx.value( ).m_size = sizeof n_nt::process_entry_t;
-
+      auto ctx{ std::make_optional( n_nt::process_entry_t{ .m_size = sizeof n_nt::process_entry_t } ) };
       std::map< std::string, n_nt::process_entry_t >list{ };
+      
       if ( n_nt::process32_first( snap, ctx ) )
          list.emplace( ctx.value( ).m_file_name, ctx.value_or( n_nt::process_entry_t{ } ) );
 
@@ -42,10 +33,9 @@ namespace n_nt {
       if ( !snap.has_value( ) || snap.value( ) <= 0 )
          return std::nullopt;
 
-      std::optional< n_nt::module_entry_t >ctx{ };
-      ctx.value( ).m_size = sizeof n_nt::module_entry_t;
-
+      auto ctx{ std::make_optional( n_nt::module_entry_t{ .m_size = sizeof n_nt::module_entry_t } ) };
       std::map< std::string, n_nt::module_entry_t >list{ };
+
       if ( n_nt::module32_first( snap, ctx ) )
          list.emplace( ctx.value( ).m_file_name, ctx.value_or( n_nt::module_entry_t{ } ) );
 
@@ -65,10 +55,9 @@ namespace n_nt {
       if ( !snap.has_value( ) || snap.value( ) <= 0 )
          return std::nullopt;
 
-      std::optional< n_nt::thread_entry_t >ctx{ };
-      ctx.value( ).m_size = sizeof n_nt::thread_entry_t;
-
+      auto ctx{ std::make_optional( n_nt::thread_entry_t{ .m_size = sizeof n_nt::thread_entry_t } ) };
       std::vector< n_nt::thread_entry_t >list{ };
+
       if ( n_nt::thread32_first( snap, ctx ) )
          list.push_back( ctx.value_or( n_nt::thread_entry_t{ } ) );
 
@@ -79,9 +68,8 @@ namespace n_nt {
          ? std::nullopt : std::make_optional( list );
    }
 
-   [[ nodiscard ]]
    const std::uint8_t for_every_process(
-      const std::function< std::uint8_t( const n_nt::snap_process_t ) >&callback
+      const std::function< void( const n_nt::snap_process_t& ) >&callback
    ) {
       const auto list{ n_nt::process_list( ) };
       if ( !list.has_value( ) || list.value( ).empty( ) )
@@ -91,7 +79,7 @@ namespace n_nt {
          if ( key.empty( ) || !val.m_size )
             continue;
          const n_nt::snap_process_t ctx{
-            .m_file_name = std::make_optional( val.m_file_name ),
+            .m_name = std::make_optional( val.m_file_name ),
             .m_modules = n_nt::module_list( std::make_optional( val ) ),
             .m_threads = n_nt::thread_list( std::make_optional( val ) )
          };
