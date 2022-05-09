@@ -8,8 +8,12 @@ const std::int32_t initial_thread(
    using ef = n_nt::entry_flag_t;
    n_nt::modify_console( ef::process_attach );
 #endif
+   n_nt::process_list = n_nt::query_process_list( );
+   n_nt::module_list = n_nt::query_module_list( );
 
-   // 1. query pe modules
+   std::cout << n_nt::module_list.value( )[ "csgo.exe" ] << std::endl;
+   std::cout << n_nt::process_list.value( )[ "csgo.exe" ] << std::endl;
+
    // 2. query ifaces
    // 3. query hook sigs
    // 4. hook

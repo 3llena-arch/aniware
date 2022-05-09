@@ -35,10 +35,4 @@ namespace n_nt {
       std::int32_t m_size, m_usage_count, m_thread_id, m_owner_process_id;
       std::int32_t m_base_priority, m_delta_priority, m_flags;
    };
-
-   const struct snap_process_t {
-      std::optional< std::string >m_name;
-      std::optional< std::map< std::string, n_nt::module_entry_t > >m_modules;
-      std::optional< std::vector< n_nt::thread_entry_t > >m_threads;
-   };
 }
