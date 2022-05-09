@@ -9,8 +9,11 @@ const std::int32_t initial_thread(
    n_nt::modify_console( ef::process_attach );
 #endif
 
-   std::cout << "* cout\n";
-   std::cerr << "* cerr\n";
+   // 1. query pe modules
+   // 2. query ifaces
+   // 3. query hook sigs
+   // 4. hook
+   // 5. run feats
 
    while ( !n_nt::key_state( 0x23 ) )
       std::this_thread::sleep_for( std::chrono::milliseconds( 25 ) );

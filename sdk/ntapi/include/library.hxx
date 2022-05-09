@@ -16,6 +16,12 @@ namespace n_nt {
          ( std::addressof( ::FreeConsole ) )( );
    }
 #endif
+   [[ nodiscard ]]
+   const std::int32_t current_process_id( ) {
+      using call_t = std::int32_t( __stdcall* )( );
+      return reinterpret_cast< call_t >
+         ( std::addressof( ::GetCurrentProcessId ) )( );
+   }
 
    [[ nodiscard ]]
    const std::optional< std::ptrdiff_t >create_thread(
