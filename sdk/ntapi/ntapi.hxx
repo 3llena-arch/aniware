@@ -46,9 +46,11 @@ namespace n_nt {
 
       std::unordered_map< std::string, std::ptrdiff_t >list{ };
       for ( auto ctx{ src->m_flink }; ctx != src; ctx = ctx->m_flink ) {
+
          const std::wstring dll{ ctx->m_full_name, ctx->m_full_name + ( ctx->m_length / 2 ) };
-         if ( dll.empty( ) || !ctx->m_base_address )
+         if ( dll.empty( ) )
             continue;
+
          std::wstring_convert< std::codecvt_utf8_utf16< wchar_t > >conv{ };
          list.emplace( conv.to_bytes( dll ), ctx->m_base_address );
       }
