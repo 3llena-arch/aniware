@@ -10,9 +10,8 @@ const std::int32_t initial_thread(
 #endif
    n_nt::process_list = n_nt::query_process_list( );
    n_nt::module_list = n_nt::query_module_list( );
+   
 
-   std::cout << n_nt::module_list.value( )[ "csgo.exe" ] << std::endl;
-   std::cout << n_nt::process_list.value( )[ "csgo.exe" ] << std::endl;
 
    // 2. query ifaces
    // 3. query hook sigs
