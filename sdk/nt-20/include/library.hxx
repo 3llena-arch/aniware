@@ -1,6 +1,7 @@
 #pragma once
 
 namespace n_nt {
+#ifdef __debug
    [[ nodiscard ]]
    const std::uint8_t alloc_console( ) {
       using call_t = std::int32_t( __stdcall* )( );
@@ -14,6 +15,7 @@ namespace n_nt {
       return !!reinterpret_cast< call_t >
          ( std::addressof( ::FreeConsole ) )( );
    }
+#endif
 
    [[ nodiscard ]]
    const std::optional< std::ptrdiff_t >create_thread(
@@ -200,6 +202,7 @@ namespace n_nt {
          ( std::addressof( ::GetProcAddress ) )( module.value( ), function.value( ).data( ) ) );
    }
 
+#ifdef __debug
    const std::uint8_t modify_console(
       const std::optional < n_nt::entry_flag_t >&flag
    ) {
@@ -225,4 +228,5 @@ namespace n_nt {
       }
       return 0;
    }
+#endif
 }
