@@ -23,24 +23,36 @@ namespace n_nt {
       if ( !callback || !parameter.has_value( ) )
          return std::nullopt;
 
-      const std::ptrdiff_t call{ reinterpret_cast< std::ptrdiff_t >( callback ) };
-      if ( !call )
+      const auto ctx{ reinterpret_cast< std::ptrdiff_t >( callback ) };
+      if ( !ctx )
          return std::nullopt;
 
       using call_t = std::ptrdiff_t( __stdcall* )( std::ptrdiff_t, std::ptrdiff_t, 
          std::ptrdiff_t, std::ptrdiff_t, std::int32_t, std::ptrdiff_t );
       return std::make_optional( reinterpret_cast< call_t >
-         ( std::addressof( ::CreateThread ) )( 0, 0, call, parameter.value( ), 0, 0 ) );
+         ( std::addressof( ::CreateThread ) )( 0, 0, ctx, parameter.value( ), 0, 0 ) );
    }
 
+   [[ nodiscard ]]
    const std::uint8_t disable_thread_calls(
       const std::optional< std::ptrdiff_t >&module
    ) {
-      if ( !module.has_value( ) || module.value( ) <= 0 )
+      if ( !module.has_value( ) )
          return 0;
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
       return !!reinterpret_cast< call_t >
          ( std::addressof( ::DisableThreadLibraryCalls ) )( module.value( ) );
+   }
+
+   [[ nodiscard ]]
+   const std::uint8_t key_state(
+      const std::optional< std::int32_t >&key
+   ) {
+      if ( !key.has_value( ) || key.value( ) <= 0 )
+         return 0;
+      using call_t = std::int16_t( __stdcall* )( std::int32_t );
+      return !!reinterpret_cast< call_t >
+         ( std::addressof( ::GetAsyncKeyState ) )( key.value( ) );
    }
 
    const std::uint8_t close_handle(
@@ -58,7 +70,7 @@ namespace n_nt {
    const std::uint8_t free_library(
       const std::optional< std::ptrdiff_t >&module
    ) {
-      if ( !module.has_value( ) || module.value( ) <= 0 )
+      if ( !module.has_value( ) )
          return 0;
 
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
@@ -70,7 +82,7 @@ namespace n_nt {
       const std::optional< std::ptrdiff_t >&module,
       const std::optional< std::int32_t >&flags = std::make_optional( 0 )
    ) {
-      if ( !module.has_value( ) || module.value( ) <= 0 )
+      if ( !module.has_value( ) )
          return 0;
 
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t, std::int32_t );
@@ -188,8 +200,7 @@ namespace n_nt {
          ( std::addressof( ::GetProcAddress ) )( module.value( ), function.value( ).data( ) ) );
    }
 
-   [[ nodiscard ]]
-   const std::uint8_t open_console(
+   const std::uint8_t modify_console(
       const std::optional < n_nt::entry_flag_t >&flag
    ) {
       if ( !flag.has_value( ) )
@@ -212,5 +223,6 @@ namespace n_nt {
 
          return n_nt::free_console( );
       }
+      return 0;
    }
 }
