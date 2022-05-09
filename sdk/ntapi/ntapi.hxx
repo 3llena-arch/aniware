@@ -5,41 +5,20 @@
 #include "include/tlhelp32.hxx"
 
 namespace n_nt {
-   static std::optional< std::unordered_map< std::string, std::ptrdiff_t > >process_list{ };
-   static std::optional< std::unordered_map< std::string, std::ptrdiff_t > >module_list{ };
-
    [[ nodiscard ]]
-   const std::optional< std::unordered_map< std::string, std::ptrdiff_t > >query_process_list( ) {
-      const auto snap{ n_nt::create_tlhelp32_snapshot( n_nt::snap_flag_t::process ) };
-      if ( !snap.has_value( ) )
-         return std::nullopt;
-
-      auto ctx{ std::make_optional( n_nt::process_entry_t{ .m_size = sizeof n_nt::process_entry_t } ) };
-      static std::unordered_map< std::string, std::ptrdiff_t >list{ };
-
-      if ( n_nt::process32_first( snap, ctx ) )
-         list.emplace( ctx.value( ).m_file_name, ctx.value( ).m_process_id );
-
-      while ( n_nt::process32_next( snap, ctx ) )
-         list.emplace( ctx.value( ).m_file_name, ctx.value( ).m_process_id );
-      return ( !n_nt::close_handle( snap ) || list.empty( ) ? std::nullopt : std::make_optional( list ) );
-   }
-
-   [[ nodiscard ]]
-   const std::optional< std::unordered_map< std::string, std::ptrdiff_t > >query_module_list( ) {
-      const auto snap{ n_nt::create_tlhelp32_snapshot( n_nt::snap_flag_t::module ) };
-      if ( !snap.has_value( ) )
-         return std::nullopt;
-
-      auto ctx{ std::make_optional( n_nt::module_entry_t{ .m_size = sizeof n_nt::module_entry_t } ) };
-      static std::unordered_map< std::string, std::ptrdiff_t >list{ };
-
-      if ( n_nt::module32_first( snap, ctx ) )
-         list.emplace( ctx.value( ).m_file_name, ctx.value( ).m_base_address );
-
-      while ( n_nt::module32_next( snap, ctx ) )
-         list.emplace( ctx.value( ).m_file_name, ctx.value( ).m_base_address );
-      return ( !n_nt::close_handle( snap ) || list.empty( ) ? std::nullopt : std::make_optional( list ) );
+   const std::optional< std::unordered_map< std::string, std::ptrdiff_t > >module_list( ) {
+      PPEB peb{ };
+      _asm mov eax, fs:0x18
+      _asm mov eax, [eax+0x30]
+      _asm mov peb, eax
+#pragma warning (disable: 6011 4244)
+      auto cur = &peb->Ldr->InMemoryOrderModuleList;
+      std::unordered_map< std::string, std::ptrdiff_t >list{ };
+      for ( auto entry = cur->Flink->Flink->Flink->Flink; entry != cur; entry = entry->Flink ) {
+         auto data_table = reinterpret_cast< PLDR_DATA_TABLE_ENTRY >( entry );
+         list.emplace( std::string{ data_table->FullDllName.Buffer, data_table->FullDllName.Buffer + (data_table->FullDllName.Length / 2) }, reinterpret_cast< std::ptrdiff_t >( *data_table->Reserved2 ) );
+      }
+      return list.empty( ) ? std::nullopt : std::make_optional( list );
    }
 
 #ifdef __debug
