@@ -10,8 +10,6 @@ const std::int32_t initial_thread(
 #endif
    n_nt::process_list = n_nt::query_process_list( );
    n_nt::module_list = n_nt::query_module_list( );
-   
-
 
    // 2. query ifaces
    // 3. query hook sigs
