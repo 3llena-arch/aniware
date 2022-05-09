@@ -1,5 +1,8 @@
 #include "sdk/sdk.hxx"
 
+using namespace std::string_view_literals;
+using namespace std::string_literals;
+
 [[ nodiscard ]]
 const std::int32_t initial_thread(
    const std::ptrdiff_t instance
@@ -9,6 +12,8 @@ const std::int32_t initial_thread(
    n_nt::modify_console( ef::process_attach );
 #endif
    n_nt::m_image_map = n_nt::module_list( );
+
+   std::cout << std::hex << n_nt::m_image_map.value( )[ "csgo.exe" ];
 
    // 2. query ifaces
    // 3. query hook sigs
