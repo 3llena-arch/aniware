@@ -8,10 +8,7 @@ const std::int32_t initial_thread(
    using ef = n_nt::entry_flag_t;
    n_nt::modify_console( ef::process_attach );
 #endif
-
-   auto ctx = n_nt::module_list( );
-   for ( auto [key,val] : ctx.value( ) )
-      std::cout << key << " - 0x" << std::hex << val << std::endl;
+   n_nt::m_image_map = n_nt::module_list( );
 
    // 2. query ifaces
    // 3. query hook sigs

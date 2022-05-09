@@ -14,6 +14,17 @@ namespace n_nt {
       thread_detach
    };
 
+   const struct ldr_entry_t {
+      ldr_entry_t* m_flink;
+      ldr_entry_t* m_blink;
+      std::int8_t pad0[ 8 ];
+      std::ptrdiff_t m_base_address;
+      std::int8_t pad1[ 16 ];
+      std::int16_t m_length, m_max_length;
+      wchar_t* m_full_name;
+      std::int8_t pad2[ 28 ];
+   };
+
    const struct module_entry_t {
       std::int32_t m_size, m_module_id, m_process_id;
       std::int32_t m_global_usage_count, m_process_usage_count;

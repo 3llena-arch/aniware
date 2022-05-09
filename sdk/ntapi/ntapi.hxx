@@ -5,18 +5,27 @@
 #include "include/tlhelp32.hxx"
 
 namespace n_nt {
+   static std::optional< std::unordered_map< std::wstring, std::ptrdiff_t > >m_image_map{ };
+
    [[ nodiscard ]]
-   const std::optional< std::unordered_map< std::string, std::ptrdiff_t > >module_list( ) {
-      PPEB peb{ };
-      _asm mov eax, fs:0x18
-      _asm mov eax, [eax+0x30]
-      _asm mov peb, eax
-#pragma warning (disable: 6011 4244)
-      auto cur = &peb->Ldr->InMemoryOrderModuleList;
-      std::unordered_map< std::string, std::ptrdiff_t >list{ };
-      for ( auto entry = cur->Flink->Flink->Flink->Flink; entry != cur; entry = entry->Flink ) {
-         auto data_table = reinterpret_cast< PLDR_DATA_TABLE_ENTRY >( entry );
-         list.emplace( std::string{ data_table->FullDllName.Buffer, data_table->FullDllName.Buffer + (data_table->FullDllName.Length / 2) }, reinterpret_cast< std::ptrdiff_t >( *data_table->Reserved2 ) );
+   const std::optional< std::unordered_map< std::wstring, std::ptrdiff_t > >module_list( ) {         
+      const n_nt::ldr_entry_t* src{ };
+
+      _asm mov eax, fs:24       ; get teb
+      _asm mov eax, [eax + 48]  ; peb
+      _asm mov eax, [eax + 12]  ; get ldr
+      _asm add eax, 20          ; loaded list
+      _asm mov src, eax         ; ret
+
+      if ( !src )
+         return std::nullopt;
+
+      std::unordered_map< std::wstring, std::ptrdiff_t >list{ };
+      for ( auto ctx{ src->m_flink }; ctx != src; ctx = ctx->m_flink ) {
+         const std::wstring dll{ ctx->m_full_name, ctx->m_full_name + ( ctx->m_length / 2 ) };
+         if ( dll.empty( ) || !ctx->m_base_address )
+            continue;
+         list.emplace( dll, ctx->m_base_address );
       }
       return list.empty( ) ? std::nullopt : std::make_optional( list );
    }
@@ -31,7 +40,6 @@ namespace n_nt {
       if ( flag.value( ) == n_nt::entry_flag_t::process_attach ) {
          if ( !n_nt::alloc_console( ) )
             return 0;
-
          return std::freopen( "conin$", "r", __acrt_iob_func( 0 ) )
              && std::freopen( "conout$", "w", __acrt_iob_func( 1 ) )
              && std::freopen( "conout$", "w", __acrt_iob_func( 2 ) );
@@ -42,7 +50,6 @@ namespace n_nt {
            || std::fclose( __acrt_iob_func( 1 ) )
            || std::fclose( __acrt_iob_func( 2 ) ) )
             return 0;
-
          return n_nt::free_console( );
       }
       return 0;
