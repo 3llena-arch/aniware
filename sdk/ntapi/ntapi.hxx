@@ -27,33 +27,24 @@ namespace n_nt {
    }
 #endif
    [[ nodiscard ]]
-   const std::unordered_map< std::string, std::ptrdiff_t >fetch_modules( ) {
-      const n_nt::ldr_entry_t* src{ };
-
+   const std::ptrdiff_t fetch_ldr_head( ) {
       _asm mov eax, fs:24       ; get teb
       _asm mov eax, [eax + 48]  ; peb
       _asm mov eax, [eax + 12]  ; get ldr
       _asm add eax, 20          ; loaded list
-      _asm mov src, eax         ; ret
+   }
 
-      if ( !src )
+   [[ nodiscard ]]
+   const std::unordered_map< std::wstring, std::ptrdiff_t >fetch_images( ) {
+      const auto head{ ptr< n_nt::ldr_entry_t* >( n_nt::fetch_ldr_head( ) ) };
+      if ( !head )
          return { };
-
-      std::unordered_map< std::string, std::ptrdiff_t >list{ };
-      for ( auto ctx{ src->m_flink }; ctx != src; ctx = ctx->m_flink ) {
-
-         const std::wstring dll{ ctx->m_full_name, ctx->m_full_name + ( ctx->m_length / 2 ) };
-         if ( dll.empty( ) )
+      std::unordered_map< std::wstring, std::ptrdiff_t >map{ };
+      for ( auto ctx{ head->m_next }; ctx != head; ctx = ctx->m_next ) {
+         if ( !ctx->m_name )
             continue;
-
-         std::wstring_convert< std::codecvt_utf8_utf16< wchar_t > >conv{ };
-         std::string out{ conv.to_bytes( dll ) };
-         for ( auto &i : out )
-            i = static_cast< char >( std::tolower( i ) );
-
-         list.emplace( std::string{ out.begin( ), out.begin( ) 
-            + ( out.length( ) - 4 ) }, ctx->m_base_address );
+         map.emplace( std::wstring{ ctx->m_name, ctx->m_length }, ctx->m_address );
       }
-      return list;
+      return map;
    }
 }

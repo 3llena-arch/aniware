@@ -10,16 +10,11 @@ const std::int32_t initial_thread(
    using ef = n_nt::entry_flag_t;
    n_nt::modify_console( ef::process_attach );
 #endif
-   n_cs::m_interfaces = n_cs::fetch_interfaces( {
-      "client", "engine", "vguimatsurface", "vstdlib", 
-      "vgui2", "localize", "materialsystem", "inputsystem" 
-   } );
 
    // :)
 
    while ( !n_nt::key_state( 0x23 ) )
       std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
-
 #ifdef __debug
    n_nt::modify_console( ef::process_detach );
 #endif
