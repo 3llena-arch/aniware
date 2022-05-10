@@ -5,206 +5,139 @@ namespace n_nt {
    [[ nodiscard ]]
    const std::uint8_t alloc_console( ) {
       using call_t = std::int32_t( __stdcall* )( );
-      return !!reinterpret_cast< call_t >
+      return !!ptr< call_t >
          ( std::addressof( ::AllocConsole ) )( );
    }
 
    [[ nodiscard ]]
    const std::uint8_t free_console( ) {
       using call_t = std::int32_t( __stdcall* )( );
-      return !!reinterpret_cast< call_t >
+      return !!ptr< call_t >
          ( std::addressof( ::FreeConsole ) )( );
    }
 #endif
    [[ nodiscard ]]
-   const std::int32_t current_process_id( ) {
-      using call_t = std::int32_t( __stdcall* )( );
-      return reinterpret_cast< call_t >
-         ( std::addressof( ::GetCurrentProcessId ) )( );
-   }
-
-   [[ nodiscard ]]
-   const std::optional< std::ptrdiff_t >create_thread(
+   const std::ptrdiff_t create_thread(
       const auto& callback,
-      const std::optional< std::ptrdiff_t >&parameter
+      const std::ptrdiff_t& parameter
    ) {
-      if ( !callback || !parameter.has_value( ) )
-         return std::nullopt;
+      if ( !callback || !parameter )
+         return 0;
 
-      const auto ctx{ reinterpret_cast< std::ptrdiff_t >( callback ) };
+      const auto ctx{ ptr< std::ptrdiff_t >( callback ) };
       if ( !ctx )
-         return std::nullopt;
+         return 0;
 
       using call_t = std::ptrdiff_t( __stdcall* )( std::ptrdiff_t, std::ptrdiff_t, 
          std::ptrdiff_t, std::ptrdiff_t, std::int32_t, std::ptrdiff_t );
-      return std::make_optional( reinterpret_cast< call_t >
-         ( std::addressof( ::CreateThread ) )( 0, 0, ctx, parameter.value( ), 0, 0 ) );
+      return ptr< call_t >
+         ( std::addressof( ::CreateThread ) )( 0, 0, ctx, parameter, 0, 0 );
    }
 
    [[ nodiscard ]]
    const std::uint8_t disable_thread_calls(
-      const std::optional< std::ptrdiff_t >&module
+      const std::ptrdiff_t& module
    ) {
-      if ( !module.has_value( ) )
+      if ( !module || module == -1 )
          return 0;
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
-      return !!reinterpret_cast< call_t >
-         ( std::addressof( ::DisableThreadLibraryCalls ) )( module.value( ) );
+      return !!ptr< call_t >
+         ( std::addressof( ::DisableThreadLibraryCalls ) )( module );
    }
 
    [[ nodiscard ]]
    const std::uint8_t key_state(
-      const std::optional< std::int32_t >&key
+      const std::int32_t& key
    ) {
-      if ( !key.has_value( ) || key.value( ) <= 0 )
+      if ( !key )
          return 0;
       using call_t = std::int16_t( __stdcall* )( std::int32_t );
-      return !!reinterpret_cast< call_t >
-         ( std::addressof( ::GetAsyncKeyState ) )( key.value( ) );
+      return !!ptr< call_t >
+         ( std::addressof( ::GetAsyncKeyState ) )( key );
    }
 
    const std::uint8_t close_handle(
-      const std::optional< std::ptrdiff_t >&handle
+      const std::ptrdiff_t& handle
    ) {
-      if ( !handle.has_value( ) || handle.value( ) <= 0 )
+      if ( !handle || handle == -1 )
          return 0;
 
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
-      return !!reinterpret_cast< call_t >
-         ( std::addressof( ::CloseHandle ) )( handle.value( ) );
+      return !!ptr< call_t >
+         ( std::addressof( ::CloseHandle ) )( handle );
    }
 
    [[ nodiscard ]]
    const std::uint8_t free_library(
-      const std::optional< std::ptrdiff_t >&module
+      const std::ptrdiff_t& module
    ) {
-      if ( !module.has_value( ) )
+      if ( !module || module == -1 )
          return 0;
 
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
-      return !!reinterpret_cast< call_t >
-         ( std::addressof( ::FreeLibrary ) )( module.value( ) );
+      return !!ptr< call_t >
+         ( std::addressof( ::FreeLibrary ) )( module );
    }
 
    const std::uint8_t free_library_exit_thread(
-      const std::optional< std::ptrdiff_t >&module,
-      const std::optional< std::int32_t >&flags = std::make_optional( 0 )
+      const std::ptrdiff_t& module,
+      const std::int32_t& flags = 0
    ) {
-      if ( !module.has_value( ) )
+      if ( !module || module == -1 )
          return 0;
 
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t, std::int32_t );
-      return !!reinterpret_cast< call_t >
-         ( std::addressof( ::FreeLibraryAndExitThread ) )( module.value( ), flags.value( ) );
+      return !!ptr< call_t >
+         ( std::addressof( ::FreeLibraryAndExitThread ) )( module, flags );
    }
    
    [[ nodiscard ]]
-   const std::optional< std::ptrdiff_t >load_library(
-      const std::optional< std::string_view >&module
+   const std::ptrdiff_t load_library(
+      const std::string_view& module
    ) {
-      if ( !module.has_value( ) || module.value( ).empty( ) )
-         return std::nullopt;
+      if ( module.empty( ) )
+         return 0;
 
       using call_t = std::ptrdiff_t( __stdcall* )( const char* );
-      return std::make_optional( reinterpret_cast< call_t >
-         ( std::addressof( ::LoadLibraryA ) )( module.value( ).data( ) ) );
+      return ptr< call_t >
+         ( std::addressof( ::LoadLibraryA ) )( module.data( ) );
    }
 
    [[ nodiscard ]]
-   const std::optional< std::ptrdiff_t >load_library_ex(
-      const std::optional< std::string_view >&module,
-      const std::optional< std::int32_t >&flags
+   const std::ptrdiff_t load_library_ex(
+      const std::string_view& module,
+      const std::int32_t& flags = 0
    ) {
-      if ( !module.has_value( ) || module.value( ).empty( ) )
-         return std::nullopt;
-
-      if ( !flags.has_value( ) || flags.value( ) <= 0 )
-         return std::nullopt;
+      if ( module.empty( ) )
+         return 0;
 
       using call_t = std::ptrdiff_t( __stdcall* )( const char*, std::ptrdiff_t, std::int32_t );
-      return std::make_optional( reinterpret_cast< call_t >
-         ( std::addressof( ::LoadLibraryExA ) )( module.value( ).data( ), 0, flags.value( ) ) );
+      return ptr< call_t >
+         ( std::addressof( ::LoadLibraryExA ) )( module.data( ), 0, flags );
    }
 
    [[ nodiscard ]]
-   const std::optional< std::ptrdiff_t >module_handle(
-      const std::optional< std::string_view >&module
+   const std::ptrdiff_t module_handle(
+      const std::string_view& module
    ) {
-      if ( !module.has_value( ) || module.value( ).empty( ) )
-         return std::nullopt;
+      if ( module.empty( ) )
+         return 0;
 
       using call_t = std::ptrdiff_t( __stdcall* )( const char* );
-      return std::make_optional( reinterpret_cast< call_t >
-         ( std::addressof( ::GetModuleHandleA ) )( module.value( ).data( ) ) );
+      return ptr< call_t >
+         ( std::addressof( ::GetModuleHandleA ) )( module.data( ) );
    }
 
    [[ nodiscard ]]
-   const std::optional< std::ptrdiff_t >module_handle_ex(
-      const std::optional< std::string_view >&module,
-      const std::optional< std::int32_t >&flags
+   const std::ptrdiff_t proc_address(
+      const std::ptrdiff_t& module,
+      const std::string_view& function
    ) {
-      if ( !module.has_value( ) || module.value( ).empty( ) )
-         return std::nullopt;
-
-      if ( !flags.has_value( ) || flags.value( ) <= 0 )
-         return std::nullopt;
-
-      std::ptrdiff_t ctx{ };
-      using call_t = std::int32_t( __stdcall* )( std::int32_t, const char*, std::ptrdiff_t* );
-      reinterpret_cast< call_t >
-         ( std::addressof( ::GetModuleHandleExA ) )( flags.value( ), module.value( ).data( ), &ctx );
-
-      return ( !ctx || ctx <= 0 ) 
-         ? std::nullopt : std::make_optional( ctx );
-   }
-
-   [[ nodiscard ]]
-   const std::optional< std::ptrdiff_t >open_process(
-      const std::optional< std::int32_t >&access,
-      const std::optional< std::int32_t >&pid,
-      const std::optional< std::int32_t >&inherit = std::make_optional( 0 )
-   ) {
-      if ( !pid.has_value( ) || pid.value( ) <= 0 )
-         return std::nullopt;
-
-      if ( !access.has_value( ) || access.value( ) <= 0 )
-         return std::nullopt;
-      
-      using call_t = std::ptrdiff_t( __stdcall* )( std::int32_t, std::int32_t, std::int32_t );
-      return std::make_optional( reinterpret_cast< call_t >
-         ( std::addressof( ::OpenProcess ) )( access.value( ), inherit.value( ), pid.value( ) ) );
-   }
-
-   [[ nodiscard ]]
-   const std::optional< std::ptrdiff_t >open_thread(
-      const std::optional< std::int32_t >&access,
-      const std::optional< std::int32_t >&tid,
-      const std::optional< std::int32_t >&inherit = std::make_optional( 0 )
-   ) {
-      if ( !tid.has_value( ) || tid.value( ) <= 0 )
-         return std::nullopt;
-
-      if ( !access.has_value( ) || access.value( ) <= 0 )
-         return std::nullopt;
-      
-      using call_t = std::ptrdiff_t( __stdcall* )( std::int32_t, std::int32_t, std::int32_t );
-      return std::make_optional( reinterpret_cast< call_t >
-         ( std::addressof( ::OpenThread ) )( access.value( ), inherit.value( ), tid.value( ) ) );
-   }
-
-   [[ nodiscard ]]
-   const std::optional< std::ptrdiff_t >proc_address(
-      const std::optional< std::ptrdiff_t >&module,
-      const std::optional< std::string_view >&function
-   ) {
-      if ( !module.has_value( ) || module.value( ) <= 0 )
-         return std::nullopt;
-
-      if ( !function.has_value( ) || function.value( ).empty( ) )
-         return std::nullopt;
+      if ( !module || module == -1 || function.empty( ) )
+         return 0;
 
       using call_t = std::ptrdiff_t( __stdcall* )( std::ptrdiff_t, const char* );
-      return std::make_optional( reinterpret_cast< call_t >
-         ( std::addressof( ::GetProcAddress ) )( module.value( ), function.value( ).data( ) ) );
+      return ptr< call_t >
+         ( std::addressof( ::GetProcAddress ) )( module, function.data( ) );
    }
 }

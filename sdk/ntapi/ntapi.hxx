@@ -2,17 +2,13 @@
 
 #include "include/types.hxx"
 #include "include/library.hxx"
-#include "include/tlhelp32.hxx"
 
 namespace n_nt {
 #ifdef __debug
    const std::uint8_t modify_console(
-      const std::optional < n_nt::entry_flag_t >&flag
+      const n_nt::entry_flag_t& flag
    ) {
-      if ( !flag.has_value( ) )
-         return 0;
-
-      if ( flag.value( ) == n_nt::entry_flag_t::process_attach ) {
+      if ( flag == n_nt::entry_flag_t::process_attach ) {
          if ( !n_nt::alloc_console( ) )
             return 0;
          return std::freopen( "conin$", "r", __acrt_iob_func( 0 ) )
@@ -20,7 +16,7 @@ namespace n_nt {
              && std::freopen( "conout$", "w", __acrt_iob_func( 2 ) );
       }
 
-      if ( flag.value( ) == n_nt::entry_flag_t::process_detach ) {
+      if ( flag == n_nt::entry_flag_t::process_detach ) {
          if ( std::fclose( __acrt_iob_func( 0 ) )
            || std::fclose( __acrt_iob_func( 1 ) )
            || std::fclose( __acrt_iob_func( 2 ) ) )
@@ -31,7 +27,7 @@ namespace n_nt {
    }
 #endif
    [[ nodiscard ]]
-   const std::optional< std::unordered_map< std::string, std::ptrdiff_t > >fetch_modules( ) {
+   const std::unordered_map< std::string, std::ptrdiff_t >fetch_modules( ) {
       const n_nt::ldr_entry_t* src{ };
 
       _asm mov eax, fs:24       ; get teb
@@ -41,7 +37,7 @@ namespace n_nt {
       _asm mov src, eax         ; ret
 
       if ( !src )
-         return std::nullopt;
+         return { };
 
       std::unordered_map< std::string, std::ptrdiff_t >list{ };
       for ( auto ctx{ src->m_flink }; ctx != src; ctx = ctx->m_flink ) {
@@ -58,6 +54,6 @@ namespace n_nt {
          list.emplace( std::string{ out.begin( ), out.begin( ) 
             + ( out.length( ) - 4 ) }, ctx->m_base_address );
       }
-      return list.empty( ) ? std::nullopt : std::make_optional( list );
+      return list;
    }
 }

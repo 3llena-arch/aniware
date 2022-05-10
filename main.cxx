@@ -1,8 +1,5 @@
 #include "sdk/sdk.hxx"
 
-using namespace std::string_view_literals;
-using namespace std::string_literals;
-
 [[ nodiscard ]]
 const std::int32_t initial_thread(
    const std::ptrdiff_t instance

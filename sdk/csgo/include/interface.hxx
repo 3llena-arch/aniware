@@ -1,19 +1,19 @@
 #pragma once
 
 namespace n_cs {
-   const std::optional< std::unordered_map< std::string, std::ptrdiff_t > >fetch_interfaces(
+   const std::unordered_map< std::string, std::ptrdiff_t >fetch_interfaces(
       const std::vector< std::string >&delim
    ) {
       const auto modules{ n_nt::fetch_modules( ) };
-      if ( !modules.has_value( ) || delim.empty( ) )
-         return std::nullopt;
+      if ( !modules.empty( ) || delim.empty( ) )
+         return { };
 
       std::unordered_map< std::string, std::ptrdiff_t >list{ };
-      for ( auto [ key, val ] : modules.value( ) ) {
+      for ( auto [ key, val ] : modules ) {
          if ( std::find( delim.begin( ), delim.end( ), key ) == delim.end( ) )
             continue;
 
-         auto ctx{ reinterpret_cast< std::uint8_t* >( val ) };
+         auto ctx{ ptr< std::uint8_t* >( val ) };
          while ( ctx[ 4 ] != 0x57
               || ctx[ 5 ] != 0x85
               || ctx[ 6 ] != 0xf6
@@ -22,7 +22,7 @@ namespace n_cs {
             ctx++;
 
          const struct iface_t{ std::ptrdiff_t m_ptr; char* m_name; iface_t* m_next; };
-         auto it{ **reinterpret_cast< iface_t*** >( ctx ) };
+         auto it{ **ptr< iface_t*** >( ctx ) };
          if ( !it )
             continue;
 
@@ -36,7 +36,7 @@ namespace n_cs {
             list.emplace( out, it->m_ptr );
          }
       }
-      return list.empty( ) ? std::nullopt : std::make_optional( list );
+      return list;
    }
-   static std::optional< std::unordered_map< std::string, std::ptrdiff_t > >m_interfaces{ };
+   static std::unordered_map< std::string, std::ptrdiff_t >m_interfaces{ };
 }
