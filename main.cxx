@@ -18,14 +18,7 @@ const std::int32_t initial_thread(
       "vgui2", "localize", "materialsystem", "inputsystem" 
    } );
 
-   if ( n_cs::m_interfaces.has_value( ) )
-      for ( auto [key,val] : n_cs::m_interfaces.value( ) )
-         std::cout << key << " 0x" << std::hex << val << std::endl;
-
-   // 2. query ifaces
-   // 3. query hook sigs
-   // 4. hook
-   // 5. run feats
+   // :)
 
    while ( !n_nt::key_state( 0x23 ) )
       std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
