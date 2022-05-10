@@ -1,5 +1,3 @@
 #pragma once
 
-namespace n_cs {
-   // :)
-}
+#include "include/interface.hxx"

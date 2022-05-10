@@ -15,8 +15,8 @@ namespace n_nt {
    };
 
    const struct ldr_entry_t {
-      ldr_entry_t* m_flink;
-      ldr_entry_t* m_blink;
+      n_nt::ldr_entry_t* m_flink;
+      n_nt::ldr_entry_t* m_blink;
       std::int8_t pad0[ 8 ];
       std::ptrdiff_t m_base_address;
       std::int8_t pad1[ 16 ];

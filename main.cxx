@@ -7,13 +7,20 @@ using namespace std::string_literals;
 const std::int32_t initial_thread(
    const std::ptrdiff_t instance
 ) {
+   while ( !n_nt::module_handle( "serverbrowser.dll" ) )
+      std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
 #ifdef __debug
    using ef = n_nt::entry_flag_t;
    n_nt::modify_console( ef::process_attach );
 #endif
-   n_nt::m_image_map = n_nt::module_list( );
+   n_cs::m_interfaces = n_cs::fetch_interfaces( {
+      "client", "engine", "vguimatsurface", "vstdlib", 
+      "vgui2", "localize", "materialsystem", "inputsystem" 
+   } );
 
-   std::cout << std::hex << n_nt::m_image_map.value( )[ "csgo.exe" ];
+   if ( n_cs::m_interfaces.has_value( ) )
+      for ( auto [key,val] : n_cs::m_interfaces.value( ) )
+         std::cout << key << " 0x" << std::hex << val << std::endl;
 
    // 2. query ifaces
    // 3. query hook sigs
@@ -21,7 +28,7 @@ const std::int32_t initial_thread(
    // 5. run feats
 
    while ( !n_nt::key_state( 0x23 ) )
-      std::this_thread::sleep_for( std::chrono::milliseconds( 25 ) );
+      std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
 
 #ifdef __debug
    n_nt::modify_console( ef::process_detach );

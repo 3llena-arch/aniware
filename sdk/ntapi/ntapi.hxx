@@ -5,7 +5,6 @@
 #include "include/tlhelp32.hxx"
 
 namespace n_nt {
-   static std::optional< std::unordered_map< std::string, std::ptrdiff_t > >m_image_map{ };
 #ifdef __debug
    const std::uint8_t modify_console(
       const std::optional < n_nt::entry_flag_t >&flag
@@ -32,7 +31,7 @@ namespace n_nt {
    }
 #endif
    [[ nodiscard ]]
-   const std::optional< std::unordered_map< std::string, std::ptrdiff_t > >module_list( ) {         
+   const std::optional< std::unordered_map< std::string, std::ptrdiff_t > >fetch_modules( ) {
       const n_nt::ldr_entry_t* src{ };
 
       _asm mov eax, fs:24       ; get teb
@@ -52,7 +51,12 @@ namespace n_nt {
             continue;
 
          std::wstring_convert< std::codecvt_utf8_utf16< wchar_t > >conv{ };
-         list.emplace( conv.to_bytes( dll ), ctx->m_base_address );
+         std::string out{ conv.to_bytes( dll ) };
+         for ( auto &i : out )
+            i = static_cast< char >( std::tolower( i ) );
+
+         list.emplace( std::string{ out.begin( ), out.begin( ) 
+            + ( out.length( ) - 4 ) }, ctx->m_base_address );
       }
       return list.empty( ) ? std::nullopt : std::make_optional( list );
    }
