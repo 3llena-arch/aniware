@@ -17,11 +17,11 @@ namespace n_cs {
          if ( !ctx )
             continue;
 
-         while ( ctx[ 4 ] != 0x57
-              || ctx[ 5 ] != 0x85
-              || ctx[ 6 ] != 0xf6
-              || ctx[ 7 ] != 0x74
-              || ctx[ 8 ] != 0x38 )
+         while ( ctx[4] != 0x57
+              || ctx[5] != 0x85
+              || ctx[6] != 0xf6
+              || ctx[7] != 0x74
+              || ctx[8] != 0x38 )
             ctx++;
          
          struct iter_t { std::ptrdiff_t m_ptr; 

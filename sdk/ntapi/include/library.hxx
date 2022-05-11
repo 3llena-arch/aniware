@@ -61,7 +61,6 @@ namespace n_nt {
    ) {
       if ( !handle || handle == -1 )
          return 0;
-
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
       return !!ptr< call_t >
          ( std::addressof( ::CloseHandle ) )( handle );
@@ -73,7 +72,6 @@ namespace n_nt {
    ) {
       if ( !module || module == -1 )
          return 0;
-
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t );
       return !!ptr< call_t >
          ( std::addressof( ::FreeLibrary ) )( module );
@@ -85,7 +83,6 @@ namespace n_nt {
    ) {
       if ( !module || module == -1 )
          return 0;
-
       using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t, std::int32_t );
       return !!ptr< call_t >
          ( std::addressof( ::FreeLibraryAndExitThread ) )( module, flags );
@@ -97,7 +94,6 @@ namespace n_nt {
    ) {
       if ( module.empty( ) )
          return 0;
-
       using call_t = std::ptrdiff_t( __stdcall* )( const char* );
       return ptr< call_t >
          ( std::addressof( ::LoadLibraryA ) )( module.data( ) );
@@ -110,7 +106,6 @@ namespace n_nt {
    ) {
       if ( module.empty( ) )
          return 0;
-
       using call_t = std::ptrdiff_t( __stdcall* )( const char*, std::ptrdiff_t, std::int32_t );
       return ptr< call_t >
          ( std::addressof( ::LoadLibraryExA ) )( module.data( ), 0, flags );
@@ -122,7 +117,6 @@ namespace n_nt {
    ) {
       if ( module.empty( ) )
          return 0;
-
       using call_t = std::ptrdiff_t( __stdcall* )( const char* );
       return ptr< call_t >
          ( std::addressof( ::GetModuleHandleA ) )( module.data( ) );
@@ -135,9 +129,22 @@ namespace n_nt {
    ) {
       if ( !module || module == -1 || function.empty( ) )
          return 0;
-
       using call_t = std::ptrdiff_t( __stdcall* )( std::ptrdiff_t, const char* );
       return ptr< call_t >
          ( std::addressof( ::GetProcAddress ) )( module, function.data( ) );
+   }
+
+   const std::uint32_t mem_protect(
+      const std::ptrdiff_t& address,
+      const std::uint32_t& flag,
+      const std::size_t& size
+   ) {
+      if ( !address || !flag || !size )
+         return 0;
+      std::uint32_t old{ };
+      using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t, std::size_t, std::uint32_t, std::uint32_t* );
+      return !!ptr< call_t >
+         ( std::addressof( ::VirtualProtect ) )( address, size, flag, &old ) ? old : 0;
+
    }
 }

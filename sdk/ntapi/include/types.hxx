@@ -17,7 +17,7 @@ namespace n_nt {
    const struct ldr_entry_t {
       n_nt::ldr_entry_t* m_next;
       std::int8_t pad0[12];
-      std::ptrdiff_t m_address;
+      std::ptrdiff_t m_ptr;
       std::int8_t pad1[16];
       std::uint16_t m_length;
       std::int8_t pad2[2];

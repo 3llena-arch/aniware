@@ -14,7 +14,7 @@
 
 #ifdef __ptr
    template< typename type_t >
-   type_t ptr( auto addr ) { return reinterpret_cast< type_t >( addr ); };
+   type_t ptr( auto addr ) { return ( type_t )addr; };
 #endif
 
 #include "ntapi/ntapi.hxx"

@@ -43,8 +43,54 @@ namespace n_nt {
       for ( auto ctx{ head->m_next }; ctx != head; ctx = ctx->m_next ) {
          if ( !ctx->m_name )
             continue;
-         map.emplace( std::wstring{ ctx->m_name, ctx->m_length }, ctx->m_address );
+         map.emplace( std::wstring{ ctx->m_name, ctx->m_length }, ctx->m_ptr );
       }
       return map;
+   }
+
+   [[ nodiscard ]]
+   const std::pair< std::ptrdiff_t, std::uint8_t* >hook_fn(
+      const auto& original,
+      const auto& callback
+   ) {
+      auto orig_fn{ ptr< const std::ptrdiff_t >( original ) };
+      auto call_fn{ ptr< const std::ptrdiff_t >( callback ) };
+
+      if ( !orig_fn || !call_fn )
+         return { };
+
+      if ( auto old_flag{ n_nt::mem_protect( orig_fn, 0x40, 6 ) }; old_flag ) {
+         static std::uint8_t src[5], dst[5] = { 0xe9, 0x00, 0x00, 0x00, 0x00 };
+
+         auto new_ptr{ ptr< std::ptrdiff_t* >( call_fn - orig_fn - 5 ) };
+         if ( !new_ptr )
+            return { };
+
+         if ( !std::memcpy( src, ptr< std::ptrdiff_t* >( orig_fn ), 5 )
+           || !std::memcpy( &dst[ 1 ], &new_ptr, 4 )
+           || !std::memcpy( ptr< std::ptrdiff_t* >( orig_fn ), dst, 5 ) )
+            return { };
+          
+         n_nt::mem_protect( orig_fn, old_flag, 6 );
+         return std::make_pair( orig_fn, src );
+      }
+      return { };
+   }
+
+   const std::uint8_t unhook_fn(
+      const std::pair< std::ptrdiff_t, std::uint8_t* >&pair
+   ) {
+      if ( !pair.first || !pair.second )
+         return 0;
+
+      if ( auto old_flag{ n_nt::mem_protect( pair.first, 0x40, 6 ) }; old_flag ) {
+         auto new_ptr{ ptr< std::ptrdiff_t* >( pair.first ) };
+         if ( !new_ptr )
+            return 0;
+
+         return std::memcpy( new_ptr, pair.second, 5 ) 
+            && n_nt::mem_protect( pair.first, old_flag, 6 );
+      }
+      return 0;
    }
 }
