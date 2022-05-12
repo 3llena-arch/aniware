@@ -39,11 +39,13 @@ namespace n_nt {
       const auto head{ ptr< n_nt::ldr_entry_t* >( n_nt::fetch_ldr_head( ) ) };
       if ( !head )
          return { };
+
       std::unordered_map< std::wstring, std::ptrdiff_t >map{ };
       for ( auto ctx{ head->m_next }; ctx != head; ctx = ctx->m_next ) {
          if ( !ctx->m_name )
             continue;
-         map.emplace( std::wstring{ ctx->m_name, ctx->m_length }, ctx->m_ptr );
+         map.emplace( std::wstring{ ctx->m_name, 
+            ptr< std::size_t >( ctx->m_length >> 1 ) }, ctx->m_ptr );
       }
       return map;
    }
