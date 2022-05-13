@@ -23,14 +23,15 @@ namespace n_cs {
               || ctx[7] != 0x74
               || ctx[8] != 0x38 )
             ctx++;
-         
+
          struct iter_t { std::ptrdiff_t m_ptr; 
             char* m_name; iter_t* m_next; };
 
          for ( auto it{ **ptr< iter_t*** >( ctx ) }; it; it = it->m_next ) {
             if ( !it->m_name )
                continue;
-            map.emplace( it->m_name, it->m_ptr );
+            using call_t = std::int32_t( __stdcall* )( );
+            map.emplace( it->m_name, ptr< call_t >( it->m_ptr )( ) );
          }
       }
       return map;

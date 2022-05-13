@@ -5,18 +5,13 @@ const std::int32_t initial_thread(
    const std::ptrdiff_t instance
 ) {
    while ( !n_nt::module_handle( "serverbrowser.dll" ) )
-      std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
+      std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 #ifdef __debug
    using ef = n_nt::entry_flag_t;
    n_nt::modify_console( ef::process_attach );
 #endif
-   n_cs::modify_retaddr( ef::process_attach );
-
-   // :)
-
    while ( !n_nt::key_state( 0x23 ) )
-      std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
-   n_cs::modify_retaddr( ef::process_detach );
+      std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 #ifdef __debug
    n_nt::modify_console( ef::process_detach );
 #endif

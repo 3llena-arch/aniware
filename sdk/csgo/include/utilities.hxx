@@ -1,6 +1,7 @@
 #pragma once
 
 namespace n_cs {
+   [[ nodiscard ]]
    const std::uint8_t modify_retaddr(
       const n_nt::entry_flag_t& flag
    ) {
