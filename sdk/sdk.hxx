@@ -19,3 +19,4 @@
 
 #include "ntapi/ntapi.hxx"
 #include "csgo/csgo.hxx"
+#include "minhook/minhook.h"
