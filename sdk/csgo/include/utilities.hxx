@@ -84,4 +84,42 @@ namespace n_cs {
       }
       return 1;
    }
+
+   [[ nodiscard ]]
+   const std::ptrdiff_t vftable_fn(
+      const std::ptrdiff_t iface,
+      const std::uint32_t index
+   ) {
+      const auto ctx{ *ptr< std::ptrdiff_t** >( iface ) };
+      if ( !ctx )
+         return 0;
+      return ctx[ index ];
+   }
+
+   const std::uint8_t modify_hooks(
+      const n_nt::entry_flag_t& flag
+   ) {
+      auto images{ n_nt::fetch_images( ) };
+      if ( images.empty( ) )
+         return 0;
+
+      if ( !n_cs::modify_retaddr( flag ) )
+         return 0;
+
+      if ( flag == n_nt::entry_flag_t::process_attach ) {
+         n_mh::create_hook( images[L"vgui2.dll"] + 0x192c0, &paint_traverse, &__paint_traverse );
+         n_mh::create_hook( images[L"client.dll"] + 0x26c4d0, &override_view, &__override_view );
+         n_mh::create_hook( images[L"client.dll"] + 0x2586f0, &frame_notify, &__frame_notify );
+         n_mh::create_hook( images[L"client.dll"] + 0x26c480, &create_move, &__create_move );
+      }
+
+      if ( flag == n_nt::entry_flag_t::process_detach ) {
+         n_mh::restore_hook( images[L"vgui2.dll"] + 0x192c0 );
+         n_mh::restore_hook( images[L"client.dll"] + 0x26c4d0 );
+         n_mh::restore_hook( images[L"client.dll"] + 0x26e180 );
+         n_mh::restore_hook( images[L"client.dll"] + 0x26c480 );
+      }
+
+      return 0;
+   }
 }

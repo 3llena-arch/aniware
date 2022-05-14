@@ -17,6 +17,6 @@
    type_t ptr( auto addr ) { return ( type_t )addr; };
 #endif
 
+#include "minhook/minhook.hxx"
 #include "ntapi/ntapi.hxx"
 #include "csgo/csgo.hxx"
-#include "minhook/minhook.h"
