@@ -10,7 +10,7 @@ namespace n_cs::engine_cvar {
 		if ( !m_ptr || name.empty( ) )
 			return { };
 
-		using call_t = n_cs::convar_t*( __stdcall* )( const char* );
-		return ptr< call_t >( m_ptr, 15 )( name.data( ) );
+		using call_t = n_cs::convar_t*( __thiscall* )( std::ptrdiff_t, const char* );
+		return ptr< call_t >( m_ptr, 15 )( m_ptr, name.data( ) );
 	}
 }

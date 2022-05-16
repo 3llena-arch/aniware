@@ -9,8 +9,8 @@ namespace n_cs::engine {
          return { };
       n_cs::vec2_t< std::size_t >size{ };
       
-      using call_t = std::int32_t( __stdcall* )( std::uint32_t*, std::uint32_t* );
-      ptr< call_t >( m_ptr, 5 )( &size.m_x, &size.m_y );
+      using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, std::uint32_t*, std::uint32_t* );
+      ptr< call_t >( m_ptr, 5 )( m_ptr, &size.m_x, &size.m_y );
       return size;
    }
 
@@ -22,8 +22,8 @@ namespace n_cs::engine {
          return { };
       n_cs::player_info_t info{ };
 
-      using call_t = std::uint8_t( __stdcall* )( std::int32_t, n_cs::player_info_t& );
-      ptr< call_t >( m_ptr, 8 )( ent_index, info );
+      using call_t = std::uint8_t( __thiscall* )( std::ptrdiff_t, std::int32_t, n_cs::player_info_t& );
+      ptr< call_t >( m_ptr, 8 )( m_ptr, ent_index, info );
       return info;
    }
 
@@ -34,8 +34,8 @@ namespace n_cs::engine {
       if ( !m_ptr || !user_id )
          return 0;
 
-      using call_t = std::int32_t( __stdcall* )( std::int32_t );
-      return ptr< call_t >( m_ptr, 9 )( user_id );
+      using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, std::int32_t );
+      return ptr< call_t >( m_ptr, 9 )( m_ptr, user_id );
    }
 
    [[ nodiscard ]]
@@ -44,8 +44,8 @@ namespace n_cs::engine {
          return { };
       n_cs::vec3_t< std::float_t >angles{ };
 
-      using call_t = std::int32_t( __stdcall* )( n_cs::vec3_t< std::float_t >& );
-      ptr< call_t >( m_ptr, 18 )( angles );
+      using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, n_cs::vec3_t< std::float_t >& );
+      ptr< call_t >( m_ptr, 18 )( m_ptr, angles );
       return angles;
    }
 
@@ -55,8 +55,8 @@ namespace n_cs::engine {
       if ( !m_ptr )
          return 0;
       
-      using call_t = std::int32_t( __stdcall* )( n_cs::vec3_t< std::float_t > );
-      return !!ptr< call_t >( m_ptr, 19 )( angles );
+      using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, n_cs::vec3_t< std::float_t > );
+      return !!ptr< call_t >( m_ptr, 19 )( m_ptr, angles );
    }
 
    [[ nodiscard ]]
@@ -64,8 +64,8 @@ namespace n_cs::engine {
       if ( !m_ptr )
          return 0;
 
-      using call_t = std::int32_t( __stdcall* )( );
-      return ptr< call_t >( m_ptr, 20 )( );
+      using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t );
+      return ptr< call_t >( m_ptr, 20 )( m_ptr );
    }
 
    [[ nodiscard ]]
@@ -73,8 +73,8 @@ namespace n_cs::engine {
       if ( !m_ptr )
          return 0;
 
-      using call_t = std::uint8_t( __stdcall* )( );
-      return !!ptr< call_t >( m_ptr, 26 )( );
+      using call_t = std::uint8_t( __thiscall* )( std::ptrdiff_t );
+      return !!ptr< call_t >( m_ptr, 26 )( m_ptr );
    }
 
    [[ nodiscard ]]
@@ -82,7 +82,7 @@ namespace n_cs::engine {
       if ( !m_ptr )
          return 0;
 
-      using call_t = std::uint8_t( __stdcall* )( );
-      return !!ptr< call_t >( m_ptr, 27 )( );
+      using call_t = std::uint8_t( __thiscall* )( std::ptrdiff_t );
+      return !!ptr< call_t >( m_ptr, 27 )( m_ptr );
    }
 }

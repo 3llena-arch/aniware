@@ -12,8 +12,8 @@ namespace n_cs::vgui_surface {
 		if ( !m_ptr )
 			return 0;
 
-		using call_t = std::int32_t( __stdcall* )( std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t );
-		return !!ptr< call_t >( m_ptr, 15 )( r, g, b, a );
+		using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t );
+		return !!ptr< call_t >( m_ptr, 15 )( m_ptr, r, g, b, a );
 	}
 
 	const std::uint8_t draw_line(
@@ -23,7 +23,7 @@ namespace n_cs::vgui_surface {
 		if ( !m_ptr )
 			return 0;
 
-		using call_t = std::int32_t( __stdcall* )( std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t );
-		return !!ptr< call_t >( m_ptr, 19 )( src.m_x, src.m_y, dst.m_x, dst.m_y );
+		using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t );
+		return !!ptr< call_t >( m_ptr, 19 )( m_ptr, src.m_x, src.m_y, dst.m_x, dst.m_y );
 	}
 }

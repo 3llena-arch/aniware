@@ -11,8 +11,8 @@ namespace n_cs::engine_trace {
 		if ( !m_ptr )
 			return 0;
 		
-		using call_t = std::int32_t( __stdcall* )( n_cs::vec3_t< std::float_t >&, std::int32_t );
-		return ptr< call_t >( m_ptr, 0 )( point, content_mask );
+		using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, n_cs::vec3_t< std::float_t >&, std::int32_t );
+		return ptr< call_t >( m_ptr, 0 )( m_ptr, point, content_mask );
 	}
 
 	const std::uint8_t trace_ray(
@@ -24,7 +24,8 @@ namespace n_cs::engine_trace {
 		if ( !m_ptr || !trace_mask )
 			return 0;
 
-		using call_t = std::int32_t( __stdcall* )( n_cs::trace_ray_t&, std::uint32_t, n_cs::trace_filter_t&, n_cs::trace_t& );
-		return !!ptr< call_t >( m_ptr, 5 )( ray, trace_mask, filter, trace );
+		using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, n_cs::trace_ray_t&, 
+			std::uint32_t, n_cs::trace_filter_t&, n_cs::trace_t& );
+		return !!ptr< call_t >( m_ptr, 5 )( m_ptr, ray, trace_mask, filter, trace );
 	}
 }
