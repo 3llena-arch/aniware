@@ -2,15 +2,16 @@
 
 #include "types/vector.hxx"
 #include "types/client_class.hxx"
+#include "types/trace_filter.hxx"
+#include "types/player_info.hxx"
 #include "types/view_setup.hxx"
 #include "types/interface.hxx"
+#include "types/trace_ray.hxx"
 #include "types/user_cmd.hxx"
 #include "types/convar.hxx"
+#include "types/trace.hxx"
 
 #include "ifaces/client_prediction.hxx"
-#include "ifaces/studio_render.hxx"
-#include "ifaces/engine_render.hxx"
-#include "ifaces/engine_sound.hxx"
 #include "ifaces/engine_trace.hxx"
 #include "ifaces/vgui_surface.hxx"
 #include "ifaces/engine_cvar.hxx"
@@ -147,11 +148,7 @@ namespace n_cs {
          return 0;
 
       n_cs::client_prediction::m_ptr = ifaces["VClientPrediction001"];
-      n_cs::engine_render::m_ptr = ifaces["VEngineRenderView014"];
-      n_cs::engine_sound::m_ptr = ifaces["IEngineSoundClient003"];
       n_cs::engine_trace::m_ptr = ifaces["EngineTraceClient004"];
-      n_cs::studio_render::m_ptr = ifaces["VStudioRender026"];
-
       n_cs::vgui_surface::m_ptr = ifaces["VGUI_Surface031"];
       n_cs::engine_cvar::m_ptr = ifaces["VEngineCvar007"];
       n_cs::vgui_panel::m_ptr = ifaces["VGUI_Panel009"];

@@ -134,15 +134,15 @@ namespace n_nt {
          ( std::addressof( ::GetProcAddress ) )( module, function.data( ) );
    }
 
-   const std::uint32_t mem_protect(
+   const std::int32_t mem_protect(
       const std::ptrdiff_t& address,
-      const std::uint32_t& flag,
+      const std::int32_t& flag,
       const std::size_t& size
    ) {
       if ( !address || !flag || !size )
          return 0;
-      std::uint32_t old{ };
-      using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t, std::size_t, std::uint32_t, std::uint32_t* );
+      std::int32_t old{ };
+      using call_t = std::int32_t( __stdcall* )( std::ptrdiff_t, std::size_t, std::int32_t, std::int32_t* );
       return !!ptr< call_t >
          ( std::addressof( ::VirtualProtect ) )( address, size, flag, &old ) ? old : 0;
 

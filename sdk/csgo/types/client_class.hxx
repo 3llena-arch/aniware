@@ -6,6 +6,6 @@ namespace n_cs {
       char* m_name;
       std::ptrdiff_t m_recv;
       n_cs::client_class_t* m_next;
-      std::uint32_t m_id;
+      std::int32_t m_id;
    };
 }

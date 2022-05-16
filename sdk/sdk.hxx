@@ -14,7 +14,7 @@
 
 #ifdef __ptr
    template< typename type_t >
-   type_t ptr( auto addr, std::uint32_t fn = 0 ) {
+   type_t ptr( auto addr, std::int32_t fn = 0 ) {
       if ( fn )
          return ( *( type_t** )addr )[ fn ];
       return ( type_t )addr;
