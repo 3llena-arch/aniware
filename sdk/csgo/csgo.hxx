@@ -1,8 +1,11 @@
 #pragma once
 
 #include "types/vector.hxx"
+#include "types/client_class.hxx"
 #include "types/view_setup.hxx"
+#include "types/interface.hxx"
 #include "types/user_cmd.hxx"
+#include "types/convar.hxx"
 
 #include "ifaces/client_prediction.hxx"
 #include "ifaces/studio_render.hxx"
@@ -17,8 +20,8 @@
 
 #include "hooks/paint_traverse.hxx"
 #include "hooks/override_view.hxx"
-#include "hooks/create_move.hxx"
 #include "hooks/frame_notify.hxx"
+#include "hooks/create_move.hxx"
 
 namespace n_cs {
    [[ nodiscard ]]
@@ -44,10 +47,7 @@ namespace n_cs {
               || ctx[8] != 0x38 )
             ctx++;
 
-         struct iter_t { std::ptrdiff_t m_ptr; 
-            char* m_name; iter_t* m_next; };
-
-         for ( auto it{ **ptr< iter_t*** >( ctx ) }; it; it = it->m_next ) {
+         for ( auto it{ **ptr< n_cs::interface_t*** >( ctx ) }; it; it = it->m_next ) {
             if ( !it->m_name )
                continue;
             using call_t = std::int32_t( __stdcall* )( );
