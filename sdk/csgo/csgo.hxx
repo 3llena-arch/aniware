@@ -26,11 +26,11 @@
 
 namespace n_cs {
    [[ nodiscard ]]
-   const std::unordered_map< std::string, std::ptrdiff_t >fetch_interfaces( ) {
+   const std::unordered_map< std::wstring, std::unordered_map< std::string, std::ptrdiff_t > >fetch_interfaces( ) {
       const auto images{ n_nt::fetch_images( ) };
       if ( images.empty( ) )
          return { };
-      std::unordered_map< std::string, std::ptrdiff_t >map{ };
+      std::unordered_map< std::wstring, std::unordered_map< std::string, std::ptrdiff_t > >map{ };
 
       for ( auto& [key, val] : images ) {
          auto delim{ n_nt::proc_address( val, "CreateInterface" ) };
@@ -48,12 +48,14 @@ namespace n_cs {
               || ctx[8] != 0x38 )
             ctx++;
 
+         std::unordered_map< std::string, std::ptrdiff_t >ifaces{ };
          for ( auto it{ **ptr< n_cs::interface_t*** >( ctx ) }; it; it = it->m_next ) {
             if ( !it->m_name )
                continue;
             using call_t = std::int32_t( __stdcall* )( );
-            map.emplace( it->m_name, ptr< call_t >( it->m_ptr )( ) );
+            ifaces.emplace( it->m_name, ptr< call_t >( it->m_ptr )( ) );
          }
+         map.emplace( key, ifaces );
       }
       return map;
    }
@@ -147,13 +149,14 @@ namespace n_cs {
       if ( ifaces.empty( ) )
          return 0;
 
-      n_cs::client_prediction::m_ptr = ifaces["VClientPrediction001"];
-      n_cs::engine_trace::m_ptr = ifaces["EngineTraceClient004"];
-      n_cs::vgui_surface::m_ptr = ifaces["VGUI_Surface031"];
-      n_cs::engine_cvar::m_ptr = ifaces["VEngineCvar007"];
-      n_cs::vgui_panel::m_ptr = ifaces["VGUI_Panel009"];
-      n_cs::engine::m_ptr = ifaces["VEngineClient014"];
-      n_cs::client::m_ptr = ifaces["VClient018"];
+      n_cs::client_prediction::m_ptr = ifaces[L"client.dll"]["VClientPrediction001"];
+      n_cs::engine_trace::m_ptr = ifaces[L"engine.dll"]["EngineTraceClient004"];
+      n_cs::vgui_surface::m_ptr = ifaces[L"vguimatsurface.dll"]["VGUI_Surface031"];
+      n_cs::engine_cvar::m_ptr = ifaces[L"engine.dll"]["VEngineCvar007"];
+
+      n_cs::vgui_panel::m_ptr = ifaces[L"vgui2.dll"]["VGUI_Panel009"];
+      n_cs::engine::m_ptr = ifaces[L"engine.dll"]["VEngineClient014"];
+      n_cs::client::m_ptr = ifaces[L"client.dll"]["VClient018"];
 
       return 1;
    }
