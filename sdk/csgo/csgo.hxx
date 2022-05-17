@@ -150,13 +150,14 @@ namespace n_cs {
          return 0;
 
       n_cs::client_prediction::m_ptr = ifaces[L"client.dll"]["VClientPrediction001"];
-      n_cs::engine_trace::m_ptr = ifaces[L"engine.dll"]["EngineTraceClient004"];
-      n_cs::vgui_surface::m_ptr = ifaces[L"vguimatsurface.dll"]["VGUI_Surface031"];
-      n_cs::engine_cvar::m_ptr = ifaces[L"engine.dll"]["VEngineCvar007"];
-
-      n_cs::vgui_panel::m_ptr = ifaces[L"vgui2.dll"]["VGUI_Panel009"];
-      n_cs::engine::m_ptr = ifaces[L"engine.dll"]["VEngineClient014"];
       n_cs::client::m_ptr = ifaces[L"client.dll"]["VClient018"];
+
+      n_cs::engine_trace::m_ptr = ifaces[L"engine.dll"]["EngineTraceClient004"];
+      n_cs::engine_cvar::m_ptr = ifaces[L"engine.dll"]["VEngineCvar007"];
+      n_cs::engine::m_ptr = ifaces[L"engine.dll"]["VEngineClient014"];
+
+      n_cs::vgui_surface::m_ptr = ifaces[L"vguimatsurface.dll"]["VGUI_Surface031"];
+      n_cs::vgui_panel::m_ptr = ifaces[L"vgui2.dll"]["VGUI_Panel009"];
 
       return 1;
    }
