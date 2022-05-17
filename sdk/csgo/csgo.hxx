@@ -148,16 +148,14 @@ namespace n_cs {
       auto ifaces{ n_cs::fetch_interfaces( ) };
       if ( ifaces.empty( ) )
          return 0;
-
+      
       n_cs::client_prediction::m_ptr = ifaces[L"client.dll"]["VClientPrediction001"];
-      n_cs::client::m_ptr = ifaces[L"client.dll"]["VClient018"];
-
+      n_cs::vgui_surface::m_ptr = ifaces[L"vguimatsurface.dll"]["VGUI_Surface031"];
       n_cs::engine_trace::m_ptr = ifaces[L"engine.dll"]["EngineTraceClient004"];
       n_cs::engine_cvar::m_ptr = ifaces[L"engine.dll"]["VEngineCvar007"];
       n_cs::engine::m_ptr = ifaces[L"engine.dll"]["VEngineClient014"];
-
-      n_cs::vgui_surface::m_ptr = ifaces[L"vguimatsurface.dll"]["VGUI_Surface031"];
       n_cs::vgui_panel::m_ptr = ifaces[L"vgui2.dll"]["VGUI_Panel009"];
+      n_cs::client::m_ptr = ifaces[L"client.dll"]["VClient018"];
 
       return 1;
    }
@@ -176,16 +174,16 @@ namespace n_cs {
          if ( !n_cs::setup_ifaces( ) )
             return 0;
 
-         n_mh::hook( ptr< std::ptrdiff_t >( n_cs::vgui_panel::m_ptr, 41 ), &paint_traverse, &__paint_traverse );
-         n_mh::hook( ptr< std::ptrdiff_t >( n_cs::client::m_ptr, 37 ), &frame_notify, &__frame_notify );
+         n_mh::hook( ptr< >( n_cs::vgui_panel::m_ptr, 41 ), &paint_traverse, &__paint_traverse );
+         n_mh::hook( ptr< >( n_cs::client::m_ptr, 37 ), &frame_notify, &__frame_notify );
 
          n_mh::hook( images[L"client.dll"] + 0x26c4d0, &override_view, &__override_view );
          n_mh::hook( images[L"client.dll"] + 0x26c480, &create_move, &__create_move );
       }
 
       if ( flag == n_nt::entry_flag_t::process_detach ) {
-         n_mh::unhook( ptr< std::ptrdiff_t >( n_cs::vgui_panel::m_ptr, 41 ) );
-         n_mh::unhook( ptr< std::ptrdiff_t >( n_cs::client::m_ptr, 37 ) );
+         n_mh::unhook( ptr< >( n_cs::vgui_panel::m_ptr, 41 ) );
+         n_mh::unhook( ptr< >( n_cs::client::m_ptr, 37 ) );
 
          n_mh::unhook( images[L"client.dll"] + 0x26c4d0 );
          n_mh::unhook( images[L"client.dll"] + 0x26c480 );
