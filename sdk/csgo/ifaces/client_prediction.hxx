@@ -9,7 +9,7 @@ namespace n_cs::client_prediction {
 		const std::ptrdiff_t helper,
 		const std::ptrdiff_t data
 	) {
-		if ( !m_ptr || !entity || !user_cmd || !helper || !data )
+		if ( !entity || !user_cmd || !helper || !data )
 			return 0;
 
 		using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, std::ptrdiff_t, n_cs::user_cmd_t*, std::ptrdiff_t, std::ptrdiff_t );
@@ -21,7 +21,7 @@ namespace n_cs::client_prediction {
 		n_cs::user_cmd_t* user_cmd,
 		const std::ptrdiff_t data
 	) {
-		if ( !m_ptr || !entity || !user_cmd || !data )
+		if ( !entity || !user_cmd || !data )
 			return 0;
 
 		using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, std::ptrdiff_t, n_cs::user_cmd_t*, std::ptrdiff_t );

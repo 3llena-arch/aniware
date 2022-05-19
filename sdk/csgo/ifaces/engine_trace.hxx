@@ -6,7 +6,7 @@ namespace n_cs::engine_trace {
 	[[ nodiscard ]]
 	const std::int32_t point_contents(
 		n_cs::vec3_t< std::float_t >&point,
-		const std::int32_t content_mask
+		const std::int32_t& content_mask
 	) {
 		if ( !m_ptr )
 			return 0;
@@ -17,7 +17,7 @@ namespace n_cs::engine_trace {
 
 	const std::uint8_t trace_ray(
 		n_cs::trace_ray_t& ray,
-		const std::uint32_t trace_mask,
+		const std::uint32_t& trace_mask,
 		n_cs::trace_filter_t& filter,
 		n_cs::trace_t& trace
 	) {

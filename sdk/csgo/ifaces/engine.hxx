@@ -16,25 +16,25 @@ namespace n_cs::engine {
 
    [[ nodiscard ]]
    const n_cs::player_info_t player_info(
-      const std::int32_t& ent_index
+      const std::uint32_t& ent_index
    ) {
       if ( !m_ptr )
          return { };
       n_cs::player_info_t info{ };
 
-      using call_t = std::uint8_t( __thiscall* )( std::ptrdiff_t, std::int32_t, n_cs::player_info_t& );
+      using call_t = std::uint8_t( __thiscall* )( std::ptrdiff_t, std::uint32_t, n_cs::player_info_t& );
       ptr< call_t >( m_ptr, 8 )( m_ptr, ent_index, info );
       return info;
    }
 
    [[ nodiscard ]]
    const std::int32_t player_by_uid(
-      const std::int32_t user_id
+      const std::uint32_t& user_id
    ) {
       if ( !m_ptr || !user_id )
          return 0;
 
-      using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, std::int32_t );
+      using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, std::uint32_t );
       return ptr< call_t >( m_ptr, 9 )( m_ptr, user_id );
    }
 

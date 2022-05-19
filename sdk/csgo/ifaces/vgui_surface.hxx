@@ -4,10 +4,10 @@ namespace n_cs::vgui_surface {
 	static std::ptrdiff_t m_ptr;
 
 	const std::uint8_t set_color(
-		const std::uint32_t r,
-		const std::uint32_t g,
-		const std::uint32_t b,
-		const std::uint32_t a = 255
+		const std::uint32_t& r,
+		const std::uint32_t& g,
+		const std::uint32_t& b,
+		const std::uint32_t& a = 255
 	) {
 		if ( !m_ptr )
 			return 0;
@@ -17,8 +17,8 @@ namespace n_cs::vgui_surface {
 	}
 
 	const std::uint8_t draw_line(
-		const n_cs::vec2_t< std::uint32_t >src,
-		const n_cs::vec2_t< std::uint32_t >dst
+		const n_cs::vec2_t< std::uint32_t >&src,
+		const n_cs::vec2_t< std::uint32_t >&dst
 	) {
 		if ( !m_ptr )
 			return 0;
