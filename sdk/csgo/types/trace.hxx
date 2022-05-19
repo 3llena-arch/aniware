@@ -13,7 +13,7 @@ namespace n_cs {
       std::uint16_t m_surface_props, m_flags;
       std::int32_t m_hit_group;
       std::uint8_t m_pad2[4];
-      std::ptrdiff_t m_entity;
+      n_cs::entity_t* m_entity;
       std::int32_t m_hitbox;
    };
 }

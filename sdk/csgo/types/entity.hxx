@@ -1,21 +1,13 @@
 #pragma once
 
+#define OFFSET( type, name, offset ) type name( ) { return *ptr< type* >( this + offset ); }
+
 namespace n_cs {
    const struct entity_t {
-      [[ nodiscard ]]
-      const std::uint8_t is_player( ) {
-         if ( !this )
-            return 0;
-         using call_t = std::uint8_t( __thiscall* )( n_cs::entity_t* );
-         return !!ptr< call_t >( this, 158 )( this );
-      }
-
-      [[ nodiscard ]]
-      const std::int32_t health( ) {
-         if ( !this )
-            return 0;
-         using call_t = std::int32_t( __thiscall* )( n_cs::entity_t* );
-         return ptr< call_t >( this, 122 )( this );
-      }
+      OFFSET( n_cs::vec3_t< std::float_t >, origin, 0x138 )
+      OFFSET( std::uint8_t, is_dormant, 0xed )
+      OFFSET( std::uint8_t, is_alive, 0x25f )
+      OFFSET( std::uint32_t, health, 0x100 )
+      OFFSET( std::uint8_t, team, 0xf4 )
    };
 }
