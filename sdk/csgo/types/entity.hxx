@@ -3,8 +3,8 @@
 namespace n_cs {
    const struct entity_t {
       [[ nodiscard ]]
-      n_cs::vec3_t< std::float_t >* origin( ) {
-         return ptr< n_cs::vec3_t* >( this + 0x138 );
+      const n_cs::vec3_t< std::float_t > origin( ) {
+         return *ptr< n_cs::vec3_t< std::float_t >* >( this + 0x138 );
       }
 
       [[ nodiscard ]]

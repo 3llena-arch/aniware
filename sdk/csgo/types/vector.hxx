@@ -6,4 +6,7 @@ namespace n_cs {
 
    template< typename type_t >
    struct vec3_t : n_cs::vec2_t< type_t > { type_t m_z; };
+
+   template< typename type_t >
+   struct vec4_t : n_cs::vec3_t< type_t > { type_t m_w; };
 }

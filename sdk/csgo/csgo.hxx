@@ -16,6 +16,7 @@
 #include "ifaces/client_prediction.hxx"
 #include "ifaces/client_entities.hxx"
 #include "ifaces/engine_trace.hxx"
+#include "ifaces/engine_debug.hxx"
 #include "ifaces/vgui_surface.hxx"
 #include "ifaces/engine_cvar.hxx"
 #include "ifaces/vgui_panel.hxx"
@@ -156,6 +157,7 @@ namespace n_cs {
       n_cs::vgui_surface::m_ptr = ifaces[L"vguimatsurface.dll"]["VGUI_Surface031"];
       n_cs::client_entities::m_ptr = ifaces[L"client.dll"]["VClientEntityList003"];
       n_cs::engine_trace::m_ptr = ifaces[L"engine.dll"]["EngineTraceClient004"];
+      n_cs::engine_debug::m_ptr = ifaces[L"engine.dll"]["VDebugOverlay004"];
 
       n_cs::engine_cvar::m_ptr = ifaces[L"engine.dll"]["VEngineCvar007"];
       n_cs::engine::m_ptr = ifaces[L"engine.dll"]["VEngineClient014"];
