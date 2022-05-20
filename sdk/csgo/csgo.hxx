@@ -3,6 +3,7 @@
 #include "types/vector.hxx"
 #include "types/entity.hxx"
 #include "types/client_class.hxx"
+#include "types/client_state.hxx"
 #include "types/trace_filter.hxx"
 #include "types/player_info.hxx"
 #include "types/view_setup.hxx"
