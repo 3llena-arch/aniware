@@ -1,8 +1,8 @@
 #pragma once
 
-namespace n_cs {
+namespace cs {
    const struct trace_t {
-      n_cs::vec3_t< std::float_t >m_src, m_dst;
+      cs::vec3_t< std::float_t >m_src, m_dst;
       std::uint8_t m_pad0[20];
       std::float_t m_fraction;
       std::int32_t m_contents;
@@ -13,7 +13,7 @@ namespace n_cs {
       std::uint16_t m_surface_props, m_flags;
       std::int32_t m_hit_group;
       std::uint8_t m_pad2[4];
-      n_cs::entity_t* m_entity;
+      cs::entity_t* m_entity;
       std::int32_t m_hitbox;
    };
 }

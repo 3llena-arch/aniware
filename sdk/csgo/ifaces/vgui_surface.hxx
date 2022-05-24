@@ -1,6 +1,6 @@
 #pragma once
 
-namespace n_cs::vgui_surface {
+namespace cs::vgui_surface {
 	static std::ptrdiff_t m_ptr;
 
 	const std::uint8_t set_color(
@@ -22,8 +22,8 @@ namespace n_cs::vgui_surface {
 	}
 
 	const std::uint8_t draw_line(
-		const n_cs::vec2_t< std::uint32_t >&src,
-		const n_cs::vec2_t< std::uint32_t >&dst
+		const cs::vec2_t< std::uint32_t >&src,
+		const cs::vec2_t< std::uint32_t >&dst
 	) {
 		using call_t = std::int32_t( __thiscall* )( std::ptrdiff_t, std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t );
 		return !!ptr< call_t >( m_ptr, 19 )( m_ptr, src.m_x, src.m_y, dst.m_x, dst.m_y );

@@ -2,7 +2,7 @@
 
 #include "include/minhook.h"
 
-namespace n_mh {
+namespace mh {
    const std::uint8_t hook(
       const std::ptrdiff_t& address,
       const auto& detour,

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace n_nt {
+namespace nt {
 #ifdef __debug
    [[ nodiscard ]]
    const std::uint8_t alloc_console( ) {

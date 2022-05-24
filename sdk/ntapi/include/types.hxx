@@ -1,6 +1,6 @@
 #pragma once
 
-namespace n_nt {
+namespace nt {
    enum class snap_flag_t : std::uint8_t {
       process = 2,
       thread = 4,
@@ -15,7 +15,7 @@ namespace n_nt {
    };
 
    const struct ldr_entry_t {
-      n_nt::ldr_entry_t* m_next;
+      nt::ldr_entry_t* m_next;
       std::uint8_t m_pad0[12];
       std::ptrdiff_t m_ptr;
       std::uint8_t m_pad1[16];

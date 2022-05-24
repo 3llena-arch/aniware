@@ -28,16 +28,16 @@
 #include "hooks/frame_notify.hxx"
 #include "hooks/create_move.hxx"
 
-namespace n_cs {
+namespace cs {
    [[ nodiscard ]]
    const std::unordered_map< std::wstring, std::unordered_map< std::string, std::ptrdiff_t > >fetch_interfaces( ) {
-      const auto images{ n_nt::fetch_images( ) };
+      const auto images{ nt::fetch_images( ) };
       if ( images.empty( ) )
          return { };
       std::unordered_map< std::wstring, std::unordered_map< std::string, std::ptrdiff_t > >map{ };
 
       for ( auto& [key, val] : images ) {
-         auto delim{ n_nt::proc_address( val, "CreateInterface" ) };
+         auto delim{ nt::proc_address( val, "CreateInterface" ) };
          if ( !delim || key.find( L"crashhandler.dll" ) != std::wstring::npos )
             continue;
 
@@ -53,7 +53,7 @@ namespace n_cs {
             ctx++;
 
          std::unordered_map< std::string, std::ptrdiff_t >ifaces{ };
-         for ( auto it{ **ptr< n_cs::interface_t*** >( ctx ) }; it; it = it->m_next ) {
+         for ( auto it{ **ptr< cs::interface_t*** >( ctx ) }; it; it = it->m_next ) {
             if ( !it->m_name )
                continue;
             using call_t = std::int32_t( __stdcall* )( );
@@ -66,9 +66,9 @@ namespace n_cs {
 
    [[ nodiscard ]]
    const std::uint8_t modify_retaddr(
-      const n_nt::entry_flag_t& flag
+      const nt::entry_flag_t& flag
    ) {
-      auto images{ n_nt::fetch_images( ) };
+      auto images{ nt::fetch_images( ) };
       if ( images.empty( ) )
          return 0;
 
@@ -88,11 +88,11 @@ namespace n_cs {
          if ( !it )
             continue;
 
-         auto head_flag{ n_nt::mem_protect( it, 0x40, 13 ) };
+         auto head_flag{ nt::mem_protect( it, 0x40, 13 ) };
          if ( !head_flag )
             continue;
 
-         if ( flag == n_nt::entry_flag_t::process_attach ) {
+         if ( flag == nt::entry_flag_t::process_attach ) {
             while ( ctx[2] != 0xec
                  || ctx[3] != 0x56
                  || ctx[4] != 0x8b
@@ -112,7 +112,7 @@ namespace n_cs {
                0xc2, 0x04, 0x00
             };
 
-            auto old_flag{ n_nt::mem_protect( fn, 0x40, 9 ) };
+            auto old_flag{ nt::mem_protect( fn, 0x40, 9 ) };
             if ( !old_flag )
                continue;
 
@@ -121,10 +121,10 @@ namespace n_cs {
               || !std::memcpy( ptr< void* >( fn ), buf, 9 ) )
                continue;
 
-            n_nt::mem_protect( fn, old_flag, 9 );
+            nt::mem_protect( fn, old_flag, 9 );
          }
 
-         if ( flag == n_nt::entry_flag_t::process_detach ) {
+         if ( flag == nt::entry_flag_t::process_detach ) {
             auto fn{ *ptr< std::ptrdiff_t* >( it ) };
             if ( !fn )
                continue;
@@ -133,7 +133,7 @@ namespace n_cs {
             if (!std::memcpy( buf, ptr< void* >( it + 4 ), 9 ) )
                continue;
 
-            auto old_flag{ n_nt::mem_protect( fn, 0x40, 9 ) };
+            auto old_flag{ nt::mem_protect( fn, 0x40, 9 ) };
             if ( !old_flag )
                continue;
 
@@ -141,59 +141,60 @@ namespace n_cs {
               || !std::memset( ptr< void* >( it ), 0, 13 ) )
                continue;
 
-            n_nt::mem_protect( fn, old_flag, 9 );
+            nt::mem_protect( fn, old_flag, 9 );
          }
-         n_nt::mem_protect( it, head_flag, 13 );
+         nt::mem_protect( it, head_flag, 13 );
       }
       return 1;
    }
 
    const std::uint8_t setup_ifaces( ) {
-      auto ifaces{ n_cs::fetch_interfaces( ) };
+      auto ifaces{ cs::fetch_interfaces( ) };
       if ( ifaces.empty( ) )
          return 0;
 
-      n_cs::client_prediction::m_ptr = ifaces[L"client.dll"]["VClientPrediction001"];
-      n_cs::vgui_surface::m_ptr = ifaces[L"vguimatsurface.dll"]["VGUI_Surface031"];
-      n_cs::client_entities::m_ptr = ifaces[L"client.dll"]["VClientEntityList003"];
-      n_cs::engine_trace::m_ptr = ifaces[L"engine.dll"]["EngineTraceClient004"];
-      n_cs::engine_debug::m_ptr = ifaces[L"engine.dll"]["VDebugOverlay004"];
+      cs::client_prediction::m_ptr = ifaces[L"client.dll"]["VClientPrediction001"];
+      cs::vgui_surface::m_ptr = ifaces[L"vguimatsurface.dll"]["VGUI_Surface031"];
+      cs::client_entities::m_ptr = ifaces[L"client.dll"]["VClientEntityList003"];
+      cs::engine_trace::m_ptr = ifaces[L"engine.dll"]["EngineTraceClient004"];
+      cs::engine_debug::m_ptr = ifaces[L"engine.dll"]["VDebugOverlay004"];
 
-      n_cs::engine_cvar::m_ptr = ifaces[L"engine.dll"]["VEngineCvar007"];
-      n_cs::engine::m_ptr = ifaces[L"engine.dll"]["VEngineClient014"];
-      n_cs::vgui_panel::m_ptr = ifaces[L"vgui2.dll"]["VGUI_Panel009"];
-      n_cs::client::m_ptr = ifaces[L"client.dll"]["VClient018"];
+      cs::engine_cvar::m_ptr = ifaces[L"engine.dll"]["VEngineCvar007"];
+      cs::engine::m_ptr = ifaces[L"engine.dll"]["VEngineClient014"];
+      cs::vgui_panel::m_ptr = ifaces[L"vgui2.dll"]["VGUI_Panel009"];
+      cs::client::m_ptr = ifaces[L"client.dll"]["VClient018"];
 
       return 1;
    }
 
    const std::uint8_t modify_hooks(
-      const n_nt::entry_flag_t& flag
+      const nt::entry_flag_t& flag
    ) {
-      auto images{ n_nt::fetch_images( ) };
+      auto images{ nt::fetch_images( ) };
       if ( images.empty( ) )
          return 0;
 
-      if ( !n_cs::modify_retaddr( flag ) )
+      if ( !cs::modify_retaddr( flag ) || !cs::setup_ifaces( ) )
          return 0;
 
-      if ( flag == n_nt::entry_flag_t::process_attach ) {
-         if ( !n_cs::setup_ifaces( ) )
+      if ( flag == nt::entry_flag_t::process_attach ) {
+         auto ctx{ nt::wow64_translation( images[L"ntdll.dll"] ) };
+         if ( !ctx )
             return 0;
 
-         n_mh::hook( ptr< >( n_cs::vgui_panel::m_ptr, 41 ), &paint_traverse, &__paint_traverse );
-         n_mh::hook( ptr< >( n_cs::client::m_ptr, 37 ), &frame_notify, &__frame_notify );
+         mh::hook( ptr< >( cs::vgui_panel::m_ptr, 41 ), &paint_traverse, &__paint_traverse );
+         mh::hook( ptr< >( cs::client::m_ptr, 37 ), &frame_notify, &__frame_notify );
 
-         n_mh::hook( images[L"client.dll"] + 0x26c4d0, &override_view, &__override_view );
-         n_mh::hook( images[L"client.dll"] + 0x26c480, &create_move, &__create_move );
+         mh::hook( images[L"client.dll"] + 0x26c4d0, &override_view, &__override_view );
+         mh::hook( images[L"client.dll"] + 0x26c480, &create_move, &__create_move );
       }
 
-      if ( flag == n_nt::entry_flag_t::process_detach ) {
-         n_mh::unhook( ptr< >( n_cs::vgui_panel::m_ptr, 41 ) );
-         n_mh::unhook( ptr< >( n_cs::client::m_ptr, 37 ) );
+      if ( flag == nt::entry_flag_t::process_detach ) {
+         mh::unhook( ptr< >( cs::vgui_panel::m_ptr, 41 ) );
+         mh::unhook( ptr< >( cs::client::m_ptr, 37 ) );
 
-         n_mh::unhook( images[L"client.dll"] + 0x26c4d0 );
-         n_mh::unhook( images[L"client.dll"] + 0x26c480 );
+         mh::unhook( images[L"client.dll"] + 0x26c4d0 );
+         mh::unhook( images[L"client.dll"] + 0x26c480 );
       }
       return 0;
    }

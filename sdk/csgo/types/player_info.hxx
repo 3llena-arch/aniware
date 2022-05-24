@@ -1,6 +1,6 @@
 #pragma once
 
-namespace n_cs {
+namespace cs {
    const struct player_info_t {
       std::uint64_t m_version, m_xuid;
       char m_name[128];
